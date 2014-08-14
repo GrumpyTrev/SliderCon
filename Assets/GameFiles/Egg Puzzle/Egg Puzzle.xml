@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Game name="Egg Puzzle" movementConstraint="none">
+	<Board width="11" height="11" image="board.png">
+		<Exclusion width="1" height="1">
+			<Position x="1" y="1"/>
+			<Position x="2" y="1"/>
+			<Position x="3" y="1"/>
+			<Position x="1" y="2"/>
+			<Position x="2" y="2"/>
+			<Position x="3" y="2"/>
+			<Position x="1" y="3"/>
+			<Position x="2" y="3"/>
+			<Position x="3" y="3"/>
+			<Position x="1" y="5"/>
+			<Position x="9" y="5"/>
+			<Position x="1" y="7"/>
+			<Position x="5" y="7"/>
+			<Position x="9" y="7"/>
+			<Position x="1" y="8"/>
+			<Position x="5" y="8"/>
+			<Position x="9" y="8"/>
+			<Position x="1" y="9"/>
+			<Position x="5" y="9"/>
+			<Position x="9" y="9"/>
+		</Exclusion>
+	</Board>
+	<Completion>
+		<TilePosition identity="1" x="7" y="4"/>
+		<TilePosition identity="2" x="4" y="4"/>
+		<TilePosition identity="3" x="7" y="1"/>
+		<TilePosition identity="4" x="4" y="1"/>
+	</Completion>
+	<Tile identity="1" width="3" height="3" image="Tile1.png">
+		<Exclusion>
+			<Position x="2" y="1"/>
+		</Exclusion>
+	</Tile>
+	<Tile identity="2" width="3" height="3" image="Tile2.png">
+		<Exclusion>
+			<Position x="0" y="1"/>
+		</Exclusion>
+	</Tile>
+	<Tile identity="3" width="3" height="3" image="Tile3.png">
+		<Exclusion/>
+	</Tile>
+	<Tile identity="4" width="3" height="3" image="Tile4.png">
+		<Exclusion>
+			<Position x="2" y="1"/>
+		</Exclusion>
+	</Tile>
+	<GameInstance name="Game 1" type="Egg Puzzle">
+		<TileTemplate identity="1" x="4" y="1"/>
+		<TileTemplate identity="2" x="7" y="1"/>
+		<TileTemplate identity="3" x="4" y="4"/>
+		<TileTemplate identity="4" x="7" y="4"/>
+	</GameInstance>
+</Game>

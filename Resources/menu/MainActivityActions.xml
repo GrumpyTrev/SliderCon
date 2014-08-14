@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+	<item
+        android:id="@+id/action_more"
+        android:icon="@drawable/ic_action_overflow"
+        android:showAsAction="always"
+        android:title="More">
+
+		<menu>
+
+		    <!-- Select game -->
+		    <item android:id="@+id/action_select_game"
+		          android:title="@string/action_select_game"
+		          android:showAsAction="never" />
+		    <!-- About -->
+		    <item android:id="@+id/action_about"
+		          android:title="@string/action_about"
+		          android:showAsAction="never" />
+		    <!-- Settings, should always be in the overflow -->
+		    <item android:id="@+id/action_settings"
+		          android:title="@string/action_settings"
+		          android:showAsAction="never" />
+	     </menu>
+
+	</item>
+</menu>

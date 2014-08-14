@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Game name="RushHour 2" movementConstraint="horizontal">
+	<Board width="11" height="11" image="board.png"/>
+	<Completion>
+		<TilePosition identity="1" x="7" y="4"/>
+		<TilePosition identity="2" x="4" y="4"/>
+		<TilePosition identity="3" x="7" y="1"/>
+		<TilePosition identity="4" x="4" y="1"/>
+	</Completion>
+	<Tile identity="1" width="3" height="3" image="Tile1.png"/>
+	<Tile identity="2" width="3" height="3" image="Tile2.png"/>
+	<Tile identity="3" width="3" height="3" image="Tile3.png"/>
+	<Tile identity="4" width="3" height="3" image="Tile4.png"/>
+	<GameInstance name="Game 1" type="Egg Puzzle">
+		<TilePosition identity="1" x="4" y="1"/>
+		<TilePosition identity="2" x="7" y="1"/>
+		<TilePosition identity="3" x="4" y="4"/>
+		<TilePosition identity="4" x="7" y="4"/>
+	</GameInstance>
+</Game>

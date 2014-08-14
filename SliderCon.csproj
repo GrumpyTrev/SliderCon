@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CDFDB1AF-0CC9-445F-ADC1-DFD9DB57C627}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AssemblyName>SliderCon</AssemblyName>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+    <RootNamespace>SliderCon</RootNamespace>
+    <AndroidApplication>True</AndroidApplication>
+    <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
+    <AndroidResgenClass>Resource</AndroidResgenClass>
+    <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
+    <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
+    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
+    <TargetFrameworkVersion>v4.4</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;__MOBILE__;__ANDROID__;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <ConsolePause>false</ConsolePause>
+    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>__MOBILE__;__ANDROID__;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="Properties\AndroidManifest.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="Mono.Android" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MainActivity.cs" />
+    <Compile Include="Resources\Resource.designer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ActivityBase.cs" />
+    <Compile Include="GameUpdater.cs" />
+    <Compile Include="History.cs" />
+    <Compile Include="ApplicationData.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="Board.cs" />
+    <Compile Include="Completion.cs" />
+    <Compile Include="Tile.cs" />
+    <Compile Include="GameInstance.cs" />
+    <Compile Include="BoardView.cs" />
+    <Compile Include="TileView.cs" />
+    <Compile Include="Exclusion.cs" />
+    <Compile Include="Position.cs" />
+    <Compile Include="GameGrid.cs" />
+    <Compile Include="TileTemplate.cs" />
+    <Compile Include="ICheckFileMovement.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\Main.axml" />
+    <AndroidResource Include="Resources\values\Strings.xml" />
+    <AndroidResource Include="Resources\drawable\Icon.png" />
+    <AndroidResource Include="Resources\menu\MainActivityActions.xml" />
+    <AndroidResource Include="Resources\drawable\ic_action_overflow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets\" />
+    <Folder Include="Assets\GameFiles\" />
+    <Folder Include="Assets\GameFiles\RushHour\" />
+    <Folder Include="Assets\GameFiles\RushHour 2\" />
+    <Folder Include="Resources\menu\" />
+    <Folder Include="Assets\GameFiles\Egg Puzzle\" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\GameFiles\RushHour\RushHour.xml" />
+    <AndroidAsset Include="Assets\GameFiles\Egg Puzzle\Board.png" />
+    <AndroidAsset Include="Assets\GameFiles\Egg Puzzle\Egg Puzzle.xml" />
+    <AndroidAsset Include="Assets\GameFiles\Egg Puzzle\Tile1.png" />
+    <AndroidAsset Include="Assets\GameFiles\Egg Puzzle\Tile2.png" />
+    <AndroidAsset Include="Assets\GameFiles\Egg Puzzle\Tile3.png" />
+    <AndroidAsset Include="Assets\GameFiles\Egg Puzzle\Tile4.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\Board.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour 2\Board.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour 2\Tile1.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour 2\Tile2.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour 2\Tile3.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour 2\Tile4.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour 2\RushHour 2.xml" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\BlueVanLeft.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\GreenVanLeft.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\OrangeCarUp.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\RedCar.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\YellowVanUp.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\BlackCarLeft.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\BlackCarUp.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\BlueCarLeft.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\BlueCarUp.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\BlueVanUp.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\DGreenCarLeft.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\DGreenCarUp.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\DGreyCarLeft.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\DGreyCarUp.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\GreenVanUp.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\GreyCarLeft.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\GreyCarUp.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\LGreenCarLeft.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\LGreenCarUp.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\OliveCarLeft.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\OliveCarUp.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\OrangeCarLeft.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\PinkCarLeft.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\PinkCarUp.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\PurpleCarLeft.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\PurpleCarUp.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\PurpleVanLeft.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\PurpleVanUp.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\YellowCarLeft.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\YellowCarUp.png" />
+    <AndroidAsset Include="Assets\GameFiles\RushHour\YellowVanLeft.png" />
+  </ItemGroup>
+</Project>

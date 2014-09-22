@@ -167,9 +167,9 @@ namespace SliderCon
 			AlertDialog.Builder dialogueBuilder = new AlertDialog.Builder( this );
 
 			dialogueBuilder.SetTitle( Resource.String.action_select_game );    
-			dialogueBuilder.SetItems( ApplicationData.InstanceProperty.GamesProperty, ( sender, args ) => 
+			dialogueBuilder.SetItems( ApplicationData.InstanceProperty.GameNamesProperty, ( sender, args ) => 
 			{
-				string selectedGame = ApplicationData.InstanceProperty.GamesProperty[ args.Which ];
+				string selectedGame = ApplicationData.InstanceProperty.GameNamesProperty[ args.Which ];
 
 				ApplicationData.InstanceProperty.ChangeToNewGame( selectedGame );
 				ShowSelectGameInstanceDialogue();
@@ -207,9 +207,9 @@ namespace SliderCon
 			AlertDialog.Builder dialogueBuilder = new AlertDialog.Builder( this );
 
 			dialogueBuilder.SetTitle( Resource.String.action_select_game_instance );    
-			dialogueBuilder.SetItems( ApplicationData.InstanceProperty.LoadedGameProperty.GameInstanceNamesProperty, ( sender, args ) => 
+			dialogueBuilder.SetItems( ApplicationData.InstanceProperty.SelectedGameProperty.GameInstanceNamesProperty, ( sender, args ) => 
 			{
-				GameInstance selectedInstance = ApplicationData.InstanceProperty.LoadedGameProperty.GameInstancesProperty[ args.Which ];
+				GameInstance selectedInstance = ApplicationData.InstanceProperty.SelectedGameProperty.GameInstancesProperty[ args.Which ];
 				ApplicationData.InstanceProperty.ChangeToNewInstance( selectedInstance );
 				FinishedInitialising();
 			} );

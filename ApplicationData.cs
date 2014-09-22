@@ -41,6 +41,7 @@ using System.Collections;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using System.IO;
+using System.Collections.Generic;
 
 using Android.Util;
 using Android.Content;
@@ -95,7 +96,14 @@ namespace SliderCon
 				// Load the current game definition
 				if ( initialisedOk == true )
 				{
-					initialisedOk = LoadGame( gameHistory.CurrentGameProperty );
+					if ( games.ContainsKey( gameHistory.CurrentGameProperty ) == true )
+					{
+						selectedGame = games[ gameHistory.CurrentGameProperty ];
+					}
+					else
+					{
+						initialisedOk = false;
+					}
 				}
 
 				// Initialise the current game instance
@@ -105,16 +113,16 @@ namespace SliderCon
 					// and initialise it against the current game
 					if ( gameHistory.CurrentInstanceProperty == null )
 					{
-						gameHistory.CurrentInstanceProperty = loadedGame.GameInstancesProperty[ 0 ].Clone();
+						gameHistory.CurrentInstanceProperty = selectedGame.GameInstancesProperty[ 0 ].Clone();
 					}
 
-					initialisedOk = gameHistory.CurrentInstanceProperty.Initialise( loadedGame );
+					initialisedOk = gameHistory.CurrentInstanceProperty.Initialise( selectedGame );
 				}
 
 				// Create a GameGrid for this game
 				if ( initialisedOk == true )
 				{
-					grid = new GameGrid( LoadedGameProperty.BoardProperty, gameHistory.CurrentInstanceProperty.TilesProperty, LoadedGameProperty.CompletionProperty );
+					grid = new GameGrid( SelectedGameProperty.BoardProperty, gameHistory.CurrentInstanceProperty.TilesProperty, SelectedGameProperty.CompletionProperty );
 				}
 
 				Log.Debug( LogTag, string.Format( "App initialized, setting Initialized {0}", initialisedOk ) );
@@ -161,14 +169,14 @@ namespace SliderCon
 		{
 			// Save the name of the selected game and load it and its instance
 			HistoryProperty.CurrentGameProperty = newGame;
-			LoadGame( newGame );
+			selectedGame = games[ newGame ];
 		}
 
 		public void ChangeToNewInstance( GameInstance newInstance )
 		{
 			HistoryProperty.CurrentInstanceProperty = newInstance.Clone();
-			HistoryProperty.CurrentInstanceProperty.Initialise( LoadedGameProperty );
-			grid = new GameGrid( LoadedGameProperty.BoardProperty, HistoryProperty.CurrentInstanceProperty.TilesProperty, LoadedGameProperty.CompletionProperty );
+			HistoryProperty.CurrentInstanceProperty.Initialise( SelectedGameProperty );
+			grid = new GameGrid( SelectedGameProperty.BoardProperty, HistoryProperty.CurrentInstanceProperty.TilesProperty, SelectedGameProperty.CompletionProperty );
 		}
 
 		/// <summary>
@@ -240,10 +248,10 @@ namespace SliderCon
 		}
 
 		/// <summary>
-		/// Gets the games property.
+		/// Gets the names of the availbale games property.
 		/// </summary>
 		/// <value>The games property.</value>
-		public string[] GamesProperty
+		public string[] GameNamesProperty
 		{
 			get
 			{
@@ -255,11 +263,11 @@ namespace SliderCon
 		/// Gets the loaded game property.
 		/// </summary>
 		/// <value>The loaded game property.</value>
-		public Game LoadedGameProperty
+		public Game SelectedGameProperty
 		{
 			get
 			{
-				return loadedGame;
+				return selectedGame;
 			}
 		}
 
@@ -300,13 +308,13 @@ namespace SliderCon
 		//
 
 		/// <summary>
-		/// Loads the game.
+		/// Loads the game from the associated game file.
 		/// </summary>
-		/// <returns><c>true</c>, if game was loaded and initialised OK, <c>false</c> otherwise.</returns>
+		/// <returns>The Game instance if game was loaded and initialised OK, null otherwise.</returns>
 		/// <param name="gameName">Game name.</param>
-		private bool LoadGame( string gameName )
+		private Game LoadGame( string gameName )
 		{
-			bool gameLoaded = true;
+			Game gameLoaded = null;
 
 			// Check if the associated game file exists
 			string gameDirectory = System.IO.Path.Combine( Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, ApplicationDirectory,
@@ -322,22 +330,24 @@ namespace SliderCon
 					XmlSerializer deserializer = new XmlSerializer( typeof( Game ) );
 					using ( Stream reader = File.Open( gameFileName, FileMode.Open ) )
 					{
-						loadedGame = ( Game )deserializer.Deserialize( reader );
+						gameLoaded = ( Game )deserializer.Deserialize( reader );
 					}
 
 					// Initialise the loaded game
-					gameLoaded = loadedGame.Initialise( gameDirectory );
+					if ( gameLoaded.Initialise( gameDirectory ) == false )
+					{
+						// Initialisation failed - return null
+						gameLoaded = null;
+					}
 				}
 				catch ( Exception anyException )
 				{
 					Log.Debug( LogTag, anyException.Message );
-					gameLoaded = false;
 				}
 			}
 			else
 			{
 				Log.Debug( LogTag, string.Format( "Cannot load game {0}", gameName ) );
-				gameLoaded = false;
 			}
 
 			return gameLoaded;
@@ -396,6 +406,7 @@ namespace SliderCon
 
 			if ( gamePaths.Length > 0 )
 			{
+				// Populate the collection of game names - actually the directory name
 				gameDirectories = new string[ gamePaths.Length ];
 				int index = 0;
 
@@ -403,6 +414,23 @@ namespace SliderCon
 				{
 					// Only need the actual directory name
 					gameDirectories[ index++ ] = System.IO.Path.GetFileNameWithoutExtension( gamePath );
+				}
+
+				// Now load the Game instance associate with each game type and store locally
+				// This can fail so loop round in a while
+				int gameIndex = 0;
+				while ( ( gamesLoaded == true ) && ( gameIndex < gamePaths.Length ) )
+				{
+					Game loadedGame = LoadGame( gameDirectories[ gameIndex ] );
+					if ( loadedGame != null )
+					{
+						games[ gameDirectories[ gameIndex ] ] = loadedGame;
+						gameIndex++;
+					}
+					else
+					{
+						gamesLoaded = false;
+					}
 				}
 			}
 			else
@@ -429,14 +457,19 @@ namespace SliderCon
 		private string[] gameDirectories = null;
 
 		/// <summary>
+		/// Hashtable of the available Game instances indexed by game name
+		/// </summary>
+		private Dictionary< string, Game > games = new Dictionary< string, Game >();
+
+		/// <summary>
 		/// The game history.
 		/// </summary>
 		private History gameHistory = null;
 
 		/// <summary>
-		/// The loaded game.
+		/// The selected game.
 		/// </summary>
-		private Game loadedGame = null;
+		private Game selectedGame = null;
 
 		/// <summary>
 		/// The game grid for the loaded game instance.

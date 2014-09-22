@@ -25,10 +25,10 @@
 		</Exclusion>
 	</Board>
 	<Completion>
-		<TilePosition identity="1" x="7" y="4"/>
-		<TilePosition identity="2" x="4" y="4"/>
-		<TilePosition identity="3" x="7" y="1"/>
-		<TilePosition identity="4" x="4" y="1"/>
+		<TileTemplate identity="1" x="7" y="4"/>
+		<TileTemplate identity="2" x="4" y="4"/>
+		<TileTemplate identity="3" x="7" y="1"/>
+		<TileTemplate identity="4" x="4" y="1"/>
 	</Completion>
 	<Tile identity="1" width="3" height="3" image="Tile1.png">
 		<Exclusion>

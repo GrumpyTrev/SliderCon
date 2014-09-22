@@ -113,7 +113,7 @@ namespace SliderCon
 			yInvalid = false;
 
 			// Only validate the move if not previously checked
-			if ( ( yNewGrid != lastCheckedX ) || ( xNewGrid != lastCheckedX ) )
+			if ( ( yNewGrid != lastCheckedY ) || ( xNewGrid != lastCheckedX ) )
 			{
 				// Keep local track of which movement is valid
 				bool xValid = false;

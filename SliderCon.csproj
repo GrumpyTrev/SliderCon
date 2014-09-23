@@ -71,6 +71,7 @@
     <Compile Include="GameGrid.cs" />
     <Compile Include="TileTemplate.cs" />
     <Compile Include="ICheckFileMovement.cs" />
+    <Compile Include="GameContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\Main.axml" />

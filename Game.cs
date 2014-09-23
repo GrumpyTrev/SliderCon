@@ -47,7 +47,7 @@ namespace SliderCon
 	/// <summary>
 	/// The Game class contains the definition of a game type.
 	/// </summary>
-	public class Game
+	public class Game : GameContainer
 	{
 		/// <summary>
 		/// Public constructor required for serialisation
@@ -110,6 +110,8 @@ namespace SliderCon
 
 			if ( initialisedOk == true )
 			{
+				// WIP - Store the game instances and their names in a couple of lists
+				GetInstances( 
 				// Form a string array of the names of all the game instances
 				gameInstanceNames = new string[ GameInstancesProperty.Count ];
 				int index = 0;

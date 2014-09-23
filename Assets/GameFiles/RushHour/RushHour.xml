@@ -37,7 +37,87 @@
 	<Tile identity="OliveCarUp" width="1" height="2" movementConstraint="vertical" image="OliveCarUp.png"/>
 	<Tile identity="DGreyCarLeft" width="2" height="1" movementConstraint="horizontal" image="DGreyCarLeft.png"/>
 	<Tile identity="DGreyCarUp" width="1" height="2" movementConstraint="vertical" image="DGreyCarUp.png"/>
-	<GameInstance name="Game 1" type="RushHour">
+	<GameCollection name="Mark Riedel">
+		<GameCollection name="Beginner">
+			<GameInstance name="Game 1" type="RushHour">
+				<TileTemplate identity="DGreenCarLeft" x="1" y="1"/>
+				<TileTemplate identity="YellowVanUp" x="6" y="1"/>
+				<TileTemplate identity="PurpleVanUp" x="1" y="2"/>
+				<TileTemplate identity="BlueVanUp" x="4" y="2"/>
+				<TileTemplate identity="RedCar" x="2" y="3"/>
+				<TileTemplate identity="OrangeCarUp" x="1" y="5"/>
+				<TileTemplate identity="BlueCarLeft" x="5" y="5"/>
+				<TileTemplate identity="GreenVanLeft" x="3" y="6"/>
+			</GameInstance>
+			<GameInstance name="Game 11" type="RushHour">
+				<TileTemplate identity="YellowVanUp" x="1" y="1"/>
+				<TileTemplate identity="DGreenCarLeft" x="2" y="1"/>
+				<TileTemplate identity="PurpleVanUp" x="4" y="1"/>
+				<TileTemplate identity="RedCar" x="2" y="3"/>
+				<TileTemplate identity="OrangeCarUp" x="3" y="4"/>
+				<TileTemplate identity="BlueVanLeft" x="4" y="4"/>
+				<TileTemplate identity="PurpleCarUp" x="6" y="5"/>
+				<TileTemplate identity="GreenVanLeft" x="3" y="6"/>
+			</GameInstance>
+		</GameCollection>
+		<GameCollection name="Intermediate">
+			<GameInstance name="Game 21" type="RushHour">
+				<TileTemplate identity="DGreenCarLeft" x="1" y="1"/>
+				<TileTemplate identity="OrangeCarUp" x="3" y="1"/>
+				<TileTemplate identity="YellowVanUp" x="4" y="1"/>
+				<TileTemplate identity="PurpleVanUp" x="1" y="2"/>
+				<TileTemplate identity="RedCar" x="2" y="3"/>
+				<TileTemplate identity="BlueVanLeft" x="2" y="4"/>
+				<TileTemplate identity="GreenVanLeft" x="4" y="6"/>
+			</GameInstance>
+		</GameCollection>
+		<GameCollection name="Advanced">
+			<GameInstance name="Game 31" type="RushHour">
+				<TileTemplate identity="LGreenCarLeft" x="1" y="1"/>
+				<TileTemplate identity="YellowVanLeft" x="4" y="1"/>
+				<TileTemplate identity="OrangeCarUp" x="4" y="2"/>
+				<TileTemplate identity="BlueCarLeft" x="5" y="2"/>
+				<TileTemplate identity="PinkCarUp" x="1" y="3"/>
+				<TileTemplate identity="RedCar" x="2" y="3"/>
+				<TileTemplate identity="PurpleVanUp" x="6" y="3"/>
+				<TileTemplate identity="BlueVanUp" x="3" y="4"/>
+				<TileTemplate identity="PurpleCarLeft" x="4" y="4"/>
+				<TileTemplate identity="DGreenCarLeft" x="1" y="5"/>
+				<TileTemplate identity="GreenVanLeft" x="4" y="6"/>
+			</GameInstance>
+			<GameInstance name="Game 32" type="RushHour">
+				<TileTemplate identity="LGreenCarLeft" x="1" y="1"/>
+				<TileTemplate identity="YellowVanUp" x="3" y="1"/>
+				<TileTemplate identity="OrangeCarUp" x="4" y="1"/>
+				<TileTemplate identity="BlueCarLeft" x="5" y="1"/>
+				<TileTemplate identity="RedCar" x="1" y="3"/>
+				<TileTemplate identity="PinkCarUp" x="1" y="4"/>
+				<TileTemplate identity="PurpleCarLeft" x="2" y="4"/>
+				<TileTemplate identity="DGreenCarLeft" x="4" y="4"/>
+				<TileTemplate identity="PurpleVanUp" x="6" y="4"/>
+				<TileTemplate identity="OliveCarUp" x="4" y="5"/>
+				<TileTemplate identity="GreyCarLeft" x="1" y="6"/>
+			</GameInstance>
+		</GameCollection>
+		<GameCollection name="Expert">
+			<GameInstance name="Game 40" type="RushHour">
+				<TileTemplate identity="YellowVanUp" x="1" y="1"/>
+				<TileTemplate identity="LGreenCarLeft" x="2" y="1"/>
+				<TileTemplate identity="OrangeCarUp" x="5" y="1"/>
+				<TileTemplate identity="BlueCarUp" x="2" y="2"/>
+				<TileTemplate identity="PinkCarUp" x="3" y="2"/>
+				<TileTemplate identity="PurpleVanUp" x="6" y="2"/>
+				<TileTemplate identity="RedCar" x="4" y="3"/>
+				<TileTemplate identity="BlueVanLeft" x="1" y="4"/>
+				<TileTemplate identity="PurpleCarUp" x="4" y="4"/>
+				<TileTemplate identity="DGreenCarUp" x="3" y="5"/>
+				<TileTemplate identity="BlackCarLeft" x="5" y="5"/>
+				<TileTemplate identity="GreyCarLeft" x="1" y="6"/>
+				<TileTemplate identity="YellowCarLeft" x="4" y="6"/>
+			</GameInstance>
+		</GameCollection>
+	</GameCollection>
+	<GameInstance name="Game 99" type="RushHour">
 		<TileTemplate identity="DGreenCarLeft" x="1" y="1"/>
 		<TileTemplate identity="YellowVanUp" x="6" y="1"/>
 		<TileTemplate identity="PurpleVanUp" x="1" y="2"/>
@@ -46,65 +126,5 @@
 		<TileTemplate identity="OrangeCarUp" x="1" y="5"/>
 		<TileTemplate identity="BlueCarLeft" x="5" y="5"/>
 		<TileTemplate identity="GreenVanLeft" x="3" y="6"/>
-	</GameInstance>
-	<GameInstance name="Game 11" type="RushHour">
-		<TileTemplate identity="YellowVanUp" x="1" y="1"/>
-		<TileTemplate identity="DGreenCarLeft" x="2" y="1"/>
-		<TileTemplate identity="PurpleVanUp" x="4" y="1"/>
-		<TileTemplate identity="RedCar" x="2" y="3"/>
-		<TileTemplate identity="OrangeCarUp" x="3" y="4"/>
-		<TileTemplate identity="BlueVanLeft" x="4" y="4"/>
-		<TileTemplate identity="PurpleCarUp" x="6" y="5"/>
-		<TileTemplate identity="GreenVanLeft" x="3" y="6"/>
-	</GameInstance>
-	<GameInstance name="Game 21" type="RushHour">
-		<TileTemplate identity="DGreenCarLeft" x="1" y="1"/>
-		<TileTemplate identity="OrangeCarUp" x="3" y="1"/>
-		<TileTemplate identity="YellowVanUp" x="4" y="1"/>
-		<TileTemplate identity="PurpleVanUp" x="1" y="2"/>
-		<TileTemplate identity="RedCar" x="2" y="3"/>
-		<TileTemplate identity="BlueVanLeft" x="2" y="4"/>
-		<TileTemplate identity="GreenVanLeft" x="4" y="6"/>
-	</GameInstance>
-	<GameInstance name="Game 31" type="RushHour">
-		<TileTemplate identity="LGreenCarLeft" x="1" y="1"/>
-		<TileTemplate identity="YellowVanLeft" x="4" y="1"/>
-		<TileTemplate identity="OrangeCarUp" x="4" y="2"/>
-		<TileTemplate identity="BlueCarLeft" x="5" y="2"/>
-		<TileTemplate identity="PinkCarUp" x="1" y="3"/>
-		<TileTemplate identity="RedCar" x="2" y="3"/>
-		<TileTemplate identity="PurpleVanUp" x="6" y="3"/>
-		<TileTemplate identity="BlueVanUp" x="3" y="4"/>
-		<TileTemplate identity="PurpleCarLeft" x="4" y="4"/>
-		<TileTemplate identity="DGreenCarLeft" x="1" y="5"/>
-		<TileTemplate identity="GreenVanLeft" x="4" y="6"/>
-	</GameInstance>
-	<GameInstance name="Game 32" type="RushHour">
-		<TileTemplate identity="LGreenCarLeft" x="1" y="1"/>
-		<TileTemplate identity="YellowVanUp" x="3" y="1"/>
-		<TileTemplate identity="OrangeCarUp" x="4" y="1"/>
-		<TileTemplate identity="BlueCarLeft" x="5" y="1"/>
-		<TileTemplate identity="RedCar" x="1" y="3"/>
-		<TileTemplate identity="PinkCarUp" x="1" y="4"/>
-		<TileTemplate identity="PurpleCarLeft" x="2" y="4"/>
-		<TileTemplate identity="DGreenCarLeft" x="4" y="4"/>
-		<TileTemplate identity="PurpleVanUp" x="6" y="4"/>
-		<TileTemplate identity="OliveCarUp" x="4" y="5"/>
-		<TileTemplate identity="GreyCarLeft" x="1" y="6"/>
-	</GameInstance>
-	<GameInstance name="Game 40" type="RushHour">
-		<TileTemplate identity="YellowVanUp" x="1" y="1"/>
-		<TileTemplate identity="LGreenCarLeft" x="2" y="1"/>
-		<TileTemplate identity="OrangeCarUp" x="5" y="1"/>
-		<TileTemplate identity="BlueCarUp" x="2" y="2"/>
-		<TileTemplate identity="PinkCarUp" x="3" y="2"/>
-		<TileTemplate identity="PurpleVanUp" x="6" y="2"/>
-		<TileTemplate identity="RedCar" x="4" y="3"/>
-		<TileTemplate identity="BlueVanLeft" x="1" y="4"/>
-		<TileTemplate identity="PurpleCarUp" x="4" y="4"/>
-		<TileTemplate identity="DGreenCarUp" x="3" y="5"/>
-		<TileTemplate identity="BlackCarLeft" x="5" y="5"/>
-		<TileTemplate identity="GreyCarLeft" x="1" y="6"/>
-		<TileTemplate identity="YellowCarLeft" x="4" y="6"/>
 	</GameInstance>
 </Game>

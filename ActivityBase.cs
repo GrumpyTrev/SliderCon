@@ -74,12 +74,26 @@ namespace SliderCon
 					// call finished initializing so that any derived activities have a chance to do work
 					RunOnUiThread( () =>
 					{
-						FinishedInitialising();
-
-						// Hide the progress bar
-						if ( progress != null )
+						if ( initialisedOk == true )
 						{
-							progress.Dismiss();
+							FinishedInitialising();
+
+							// Hide the progress bar
+							if ( progress != null )
+							{
+								progress.Dismiss();
+							}
+						}
+						else
+						{
+							new AlertDialog.Builder(this)
+								.SetPositiveButton("OK", (sender, args) =>
+								{
+									this.Finish();
+								})
+								.SetMessage("An error happened!")
+								.SetTitle("Error")
+								.Show();
 						}
 					} );
 				};

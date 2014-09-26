@@ -84,7 +84,6 @@
     <Folder Include="Assets\" />
     <Folder Include="Assets\GameFiles\" />
     <Folder Include="Assets\GameFiles\RushHour\" />
-    <Folder Include="Assets\GameFiles\RushHour 2\" />
     <Folder Include="Resources\menu\" />
     <Folder Include="Assets\GameFiles\Egg Puzzle\" />
   </ItemGroup>
@@ -97,12 +96,6 @@
     <AndroidAsset Include="Assets\GameFiles\Egg Puzzle\Tile3.png" />
     <AndroidAsset Include="Assets\GameFiles\Egg Puzzle\Tile4.png" />
     <AndroidAsset Include="Assets\GameFiles\RushHour\Board.png" />
-    <AndroidAsset Include="Assets\GameFiles\RushHour 2\Board.png" />
-    <AndroidAsset Include="Assets\GameFiles\RushHour 2\Tile1.png" />
-    <AndroidAsset Include="Assets\GameFiles\RushHour 2\Tile2.png" />
-    <AndroidAsset Include="Assets\GameFiles\RushHour 2\Tile3.png" />
-    <AndroidAsset Include="Assets\GameFiles\RushHour 2\Tile4.png" />
-    <AndroidAsset Include="Assets\GameFiles\RushHour 2\RushHour 2.xml" />
     <AndroidAsset Include="Assets\GameFiles\RushHour\BlueVanLeft.png" />
     <AndroidAsset Include="Assets\GameFiles\RushHour\GreenVanLeft.png" />
     <AndroidAsset Include="Assets\GameFiles\RushHour\OrangeCarUp.png" />

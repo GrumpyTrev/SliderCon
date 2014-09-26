@@ -110,15 +110,9 @@ namespace SliderCon
 
 			if ( initialisedOk == true )
 			{
-				// WIP - Store the game instances and their names in a couple of lists
-				GetInstances( 
-				// Form a string array of the names of all the game instances
-				gameInstanceNames = new string[ GameInstancesProperty.Count ];
-				int index = 0;
-				foreach ( GameInstance instance in GameInstancesProperty )
-				{
-					gameInstanceNames[ index++ ] = instance.NameProperty;
-				}
+				// Collect the names of all the instances in the configured container
+				CollectionNameProperty = NameProperty;
+				initialisedOk = GatherInstances( "", gameInstances );
 			}
 
 			return initialisedOk;
@@ -185,17 +179,6 @@ namespace SliderCon
 			set;
 		}
 
-		[XmlElement( "GameInstance" ) ]
-		/// <summary>
-		/// Gets or sets the game instances property.
-		/// </summary>
-		/// <value>The game instances property.</value>
-		public List< GameInstance > GameInstancesProperty
-		{
-			get;
-			set;
-		}
-
 		[XmlElement( "Completion" ) ]
 		/// <summary>
 		/// Gets or sets the Completion property.
@@ -220,17 +203,9 @@ namespace SliderCon
 			}
 		}
 
-		[XmlIgnoreAttribute]
-		/// <summary>
-		/// Gets the names of the game instances
-		/// </summary>
-		public string[] GameInstanceNamesProperty
-		{
-			get
-			{
-				return gameInstanceNames;
-			}
-		}
+		//
+		// Private methods
+		//
 
 		//
 		// Private data
@@ -242,9 +217,9 @@ namespace SliderCon
 		private Dictionary< string, Tile > tileDictionary = new Dictionary< string, Tile >();
 
 		/// <summary>
-		/// List of the names of all the game instance
+		/// Dictionary of GameInstance instances indexed by their full names
 		/// </summary>
-		private string[] gameInstanceNames = null;
+		private Dictionary< string, GameInstance > gameInstances = new Dictionary<string, GameInstance>();
 
 		/// <summary>
 		/// The log tag for this class

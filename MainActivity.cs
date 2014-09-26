@@ -169,62 +169,59 @@ namespace SliderCon
 			dialogueBuilder.SetTitle( Resource.String.action_select_game );    
 			dialogueBuilder.SetItems( ApplicationData.InstanceProperty.GameNamesProperty, ( sender, args ) => 
 			{
-				string selectedGame = ApplicationData.InstanceProperty.GameNamesProperty[ args.Which ];
+				Game selectedGame = ApplicationData.InstanceProperty.GamesProperty[ ApplicationData.InstanceProperty.GameNamesProperty[ args.Which ] ];
 
-				ApplicationData.InstanceProperty.ChangeToNewGame( selectedGame );
-				ShowSelectGameInstanceDialogue();
+				ShowSelectGameInstanceDialogue( selectedGame, selectedGame );
 			} );
 
-/*
-			dialogueBuilder.SetPositiveButton( Resource.String.alert_dialog_ok, ( sender, args ) =>
-			{
-				ApplicationData.InstanceProperty.ChangeToNewGame( selectedGame );
-
-				if ( ApplicationData.InstanceProperty.LoadedGameProperty.GameInstancesProperty.Count > 1 )
-				{
-					ShowSelectGameInstanceDialogue();
-				}
-				else
-				{
-					ApplicationData.InstanceProperty.ChangeToNewInstance( ApplicationData.InstanceProperty.LoadedGameProperty.GameInstancesProperty[ 0 ] );
-					FinishedInitialising();
-				}
-			} );
-
-			dialogueBuilder.SetNegativeButton( Resource.String.alert_dialog_cancel, ( sender, args ) =>
-			{
-			} );
-*/
 			dialogueBuilder.Create().Show();
+		}
+
+		class DialogCancelListener : Java.Lang.Object, IDialogInterfaceOnCancelListener
+		{
+			public DialogCancelListener (Action cleanup)
+			{
+				this.cleanup = cleanup;
+			}
+			Action cleanup;
+			public void OnCancel (IDialogInterface dialog)
+			{
+				cleanup ();
+			}
 		}
 
 		/// <summary>
 		/// Shows the select game instance dialogue.
 		/// This lets the user select the instance of a game type.  
 		/// </summary>
-		private void ShowSelectGameInstanceDialogue()
+		private void ShowSelectGameInstanceDialogue( Game selectedGame, GameContainer container )
 		{
 			AlertDialog.Builder dialogueBuilder = new AlertDialog.Builder( this );
 
 			dialogueBuilder.SetTitle( Resource.String.action_select_game_instance );    
-			dialogueBuilder.SetItems( ApplicationData.InstanceProperty.SelectedGameProperty.GameInstanceNamesProperty, ( sender, args ) => 
+			dialogueBuilder.SetItems( container.ItemsProperty.ToArray(), ( sender, args ) => 
 			{
-				GameInstance selectedInstance = ApplicationData.InstanceProperty.SelectedGameProperty.GameInstancesProperty[ args.Which ];
-				ApplicationData.InstanceProperty.ChangeToNewInstance( selectedInstance );
-				FinishedInitialising();
+				object selectedItem = container.GetIndexedItem( args.Which );
+				if ( ( selectedItem is GameContainer ) == true )
+				{
+					ShowSelectGameInstanceDialogue( selectedGame, ( GameContainer )selectedItem );
+				}
+				else if ( ( selectedItem is GameInstance ) == true )
+				{
+					ApplicationData.InstanceProperty.ChangeToNewGame( selectedGame.NameProperty );
+					ApplicationData.InstanceProperty.ChangeToNewInstance( ( GameInstance )selectedItem );
+					FinishedInitialising();
+				}
 			} );
+			dialogueBuilder.SetOnCancelListener( new DialogCancelListener( () =>
+			{
+				if ( container.ParentContainerProperty != null )
+				{
+					ShowSelectGameInstanceDialogue( selectedGame, container.ParentContainerProperty );
+				}
 
-			/*
-			dialogueBuilder.SetPositiveButton( Resource.String.alert_dialog_ok, ( sender, args ) =>
-			{
-				ApplicationData.InstanceProperty.ChangeToNewInstance( selectedInstance );
-				FinishedInitialising();
-			} );
+			} ) );
 
-			dialogueBuilder.SetNegativeButton( Resource.String.alert_dialog_cancel, ( sender, args ) =>
-			{
-			} );
-*/
 			dialogueBuilder.Create().Show();
 		}
 

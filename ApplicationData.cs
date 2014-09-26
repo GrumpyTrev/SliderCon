@@ -251,11 +251,19 @@ namespace SliderCon
 		/// Gets the names of the availbale games property.
 		/// </summary>
 		/// <value>The games property.</value>
+		public Dictionary< string, Game > GamesProperty
+		{
+			get
+			{
+				return games;
+			}
+		}
+
 		public string[] GameNamesProperty
 		{
 			get
 			{
-				return gameDirectories;
+				return gameNames;
 			}
 		}
 
@@ -386,12 +394,11 @@ namespace SliderCon
 			{
 				// Need to create an empty History with the first available game as the current game
 				gameHistory = new History();
-				gameHistory.CurrentGameProperty = gameDirectories[ 0 ];
+				gameHistory.CurrentGameProperty = GameNamesProperty[ 0 ];
 			}
 
 			return loadedOk;
 		}
-
 
 		/// <summary>
 		/// Loads the available games list from external storage
@@ -406,25 +413,15 @@ namespace SliderCon
 
 			if ( gamePaths.Length > 0 )
 			{
-				// Populate the collection of game names - actually the directory name
-				gameDirectories = new string[ gamePaths.Length ];
-				int index = 0;
-
-				foreach ( string gamePath in gamePaths )
-				{
-					// Only need the actual directory name
-					gameDirectories[ index++ ] = System.IO.Path.GetFileNameWithoutExtension( gamePath );
-				}
-
-				// Now load the Game instance associate with each game type and store locally
+				// Load the Game instance associate with each game type and store locally
 				// This can fail so loop round in a while
 				int gameIndex = 0;
 				while ( ( gamesLoaded == true ) && ( gameIndex < gamePaths.Length ) )
 				{
-					Game loadedGame = LoadGame( gameDirectories[ gameIndex ] );
+					Game loadedGame = LoadGame( System.IO.Path.GetFileName( gamePaths[ gameIndex ] ) );
 					if ( loadedGame != null )
 					{
-						games[ gameDirectories[ gameIndex ] ] = loadedGame;
+						games[ loadedGame.NameProperty ] = loadedGame;
 						gameIndex++;
 					}
 					else
@@ -437,6 +434,14 @@ namespace SliderCon
 			{
 				Log.Debug( LogTag, "No games found to load" );
 				gamesLoaded = false;
+			}
+
+			// If successful copy the names of the games to a string array
+			if ( gamesLoaded == true )
+			{
+				gameNames = new string[ gamePaths.Length ];
+				games.Keys.CopyTo( gameNames, 0 );
+				Array.Sort( gameNames );
 			}
 
 			return gamesLoaded;
@@ -452,14 +457,14 @@ namespace SliderCon
 		private static ApplicationData instance = null;
 
 		/// <summary>
-		/// List of the names of all the available games directories
-		/// </summary>
-		private string[] gameDirectories = null;
-
-		/// <summary>
 		/// Hashtable of the available Game instances indexed by game name
 		/// </summary>
 		private Dictionary< string, Game > games = new Dictionary< string, Game >();
+
+		/// <summary>
+		/// Names of all the available games
+		/// </summary>
+		private string[] gameNames = null;
 
 		/// <summary>
 		/// The game history.

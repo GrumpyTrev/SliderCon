@@ -145,6 +145,17 @@ namespace SliderCon
 			}
 		}
 
+		[XmlIgnoreAttribute]
+		/// <summary>
+		/// Gets or sets the instance's full name property.
+		/// </summary>
+		/// <value>The full name of the instance</value>
+		public string FullNameProperty
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// The tiles. associated with this instance created from the templates
 		/// </summary>

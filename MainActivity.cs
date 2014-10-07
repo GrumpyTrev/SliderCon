@@ -98,6 +98,14 @@ namespace SliderCon
 			return handled;
 		}
 
+		public static Activity ActivityProperty
+		{
+			get
+			{
+				return activityInstance;
+			}
+		}
+
 		//
 		// Protected methods
 		//
@@ -112,6 +120,17 @@ namespace SliderCon
 
 			// Set our view from the "main" layout resource
 			SetContentView( Resource.Layout.Main );
+
+			resetButton = FindViewById<Button>( Resource.Id.resetButton);
+			resetButton.Click += delegate 
+			{
+				ApplicationData.InstanceProperty.ChangeToNewInstance( ApplicationData.InstanceProperty.HistoryProperty.CurrentGameProperty,
+					ApplicationData.InstanceProperty.HistoryProperty.CurrentInstanceProperty );
+				FinishedInitialising();
+
+			};
+
+			activityInstance = this;
 		}
 
 		/// <summary>
@@ -135,6 +154,9 @@ namespace SliderCon
 		/// </summary>
 		protected override void FinishedInitialising()
 		{
+			// Display the game name
+			FindViewById<TextView>( Resource.Id.gameName ).Text = ApplicationData.InstanceProperty.HistoryProperty.CurrentInstanceProperty.FullNameProperty;
+
 			// Initialise the BoardView with the loaded game.
 			// This initialisation includes scaling and displaying the board and then displaying each tile in the current game instance.
 			// The identity of the tiles are used to select the actual tile from the game type. The instance of the tile may be rotated. This rotation 
@@ -142,16 +164,21 @@ namespace SliderCon
 			BoardView view = FindViewById<BoardView>( Resource.Id.gameboard );
 
 			// Initialise the view but only render it if it has a valid size
-			GameGrid theGrid = ApplicationData.InstanceProperty.GameGridProperty;
-			view.Initialise( theGrid.BoardProperty.ImageProperty, theGrid.TilesProperty, theGrid, theGrid.BoardProperty.WidthProperty, 
+			GamePlayer thePlayer = ApplicationData.InstanceProperty.GamePlayerProperty;
+			view.Initialise( thePlayer.BoardProperty.ImageProperty, thePlayer.TilesProperty, thePlayer, thePlayer.BoardProperty.WidthProperty, 
 				( ( view.Width > 0 ) && ( view.Height > 0 ) ) );
 
-			theGrid.OnGameCompletion = new GameGrid.GameCompletionDelegate( GameCompleted );
+			// Tell the GamePlayer what delegate to call when the game has completed
+			thePlayer.OnGameCompletion = new GamePlayer.GameCompletionDelegate( GameCompleted );
 
-			// Get the game name text field
-			TextView gameName = FindViewById<TextView>( Resource.Id.gameName );
+			// Tell the GamePlayer what delegate to call when the back button has been pressed
+			thePlayer.OnBackMove = new GamePlayer.BackMoveDelegate( view.BackMove );
 
-			gameName.Text = ApplicationData.InstanceProperty.HistoryProperty.CurrentGameProperty;
+			// Give the GamePlayer a reference to the move count field
+			thePlayer.MoveCountProperty = FindViewById<TextView>( Resource.Id.movesCount );
+
+			// Give the GamePlayer a reference to the Back button
+			thePlayer.BackButtonProperty = FindViewById<Button>( Resource.Id.backButton );
 		}
 
 		//
@@ -208,8 +235,7 @@ namespace SliderCon
 				}
 				else if ( ( selectedItem is GameInstance ) == true )
 				{
-					ApplicationData.InstanceProperty.ChangeToNewGame( selectedGame.NameProperty );
-					ApplicationData.InstanceProperty.ChangeToNewInstance( ( GameInstance )selectedItem );
+					ApplicationData.InstanceProperty.ChangeToNewInstance( selectedGame.NameProperty, ( GameInstance )selectedItem );
 					FinishedInitialising();
 				}
 			} );
@@ -232,6 +258,14 @@ namespace SliderCon
 			dialogueBuilder.SetMessage( Resource.String.alert_completion_what_next );
 			dialogueBuilder.Create().Show();
 		}
+
+		//
+		//
+		//
+
+		private Button resetButton = null;
+
+		private static Activity activityInstance = null;
 	}
 }
 

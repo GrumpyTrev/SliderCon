@@ -82,6 +82,9 @@ namespace SliderCon
 				createdTile = tileDictionary[ IdentityProperty ].Transform( new Tile.TileTransformation[ 0 ] );
 				createdTile.GridXProperty = XProperty;
 				createdTile.GridYProperty = YProperty;
+
+				// Add a reference back to this template
+				createdTile.AssociatedTemplateProperty = this;
 			}
 
 			return createdTile;

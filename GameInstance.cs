@@ -97,8 +97,8 @@ namespace SliderCon
 
 			// Copy the simple members
 			clonedInstance.NameProperty = NameProperty;
-			clonedInstance.TypeProperty = TypeProperty;
 			clonedInstance.TileTemplatesProperty = TileTemplatesProperty;
+			clonedInstance.FullNameProperty = FullNameProperty;
 
 			return clonedInstance;
 		}
@@ -109,17 +109,6 @@ namespace SliderCon
 		/// </summary>
 		/// <value>The name property.</value>
 		public string NameProperty
-		{
-			get;
-			set;
-		}
-
-		[XmlAttribute( "type" ) ]
-		/// <summary>
-		/// Gets or sets the type property.
-		/// </summary>
-		/// <value>The type property.</value>
-		public string TypeProperty
 		{
 			get;
 			set;
@@ -145,7 +134,7 @@ namespace SliderCon
 			}
 		}
 
-		[XmlIgnoreAttribute]
+		[XmlAttribute( "fullName" ) ]
 		/// <summary>
 		/// Gets or sets the instance's full name property.
 		/// </summary>

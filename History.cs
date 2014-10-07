@@ -67,6 +67,14 @@ namespace SliderCon
 			get;
 			set;
 		}
+
+		[XmlElement( "MoveHistory" ) ]
+		public MoveHistory MoveHistoryProperty
+		{
+			get;
+			set;
+		}
+
 	}
 }
 

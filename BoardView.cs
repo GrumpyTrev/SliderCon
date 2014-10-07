@@ -70,24 +70,55 @@ namespace SliderCon
 		/// <param name="checker">A ICheckTileMovement instance used to check tile movements</param>
 		/// <param name="width">The width of the board in terms of grid positions</param>
 		/// <param name="render">If set to <c>true</c> render.</param>
-		public void Initialise( Bitmap theBoardBitmap, List< Tile > theTilesCollection, ICheckTileMovement checker, int width, bool render )
+		public void Initialise( Bitmap theBoardBitmap, List< Tile > theTilesCollection, GamePlayer thePlayer, int width, bool render )
 		{
 			// Save the board image, the tile collection and the movement checker
 			boardBitmap = theBoardBitmap;
 			tilesCollection = theTilesCollection;
-			movementChecker = checker;
+			movementChecker = thePlayer;
 			boardWidth = width;
 
 			if ( render == true )
 			{
-				// Initialise the board background
-				InitialiseBoardBackground();
+				MainActivity.ActivityProperty.RunOnUiThread( () =>
+				{
+					// Initialise the board background
+					InitialiseBoardBackground();
 
-				// Try changing this hkjhj hjkhjhjk
-				// Load the tiles
-				LoadTiles();
+					// Load the tiles
+					LoadTiles();
+				} );
 			}
 		}
+
+		/// <summary>
+		/// Called when a move is to be undone.
+		/// The tile has already been updated. Update the associated TileView position
+		/// </summary>
+		/// <param name="theMove">The move.</param>
+		public void BackMove( TileMove theMove )
+		{
+			// Need to find the TileView with a Tile with the correct indentity
+			bool tileFound = false;
+
+			int childCount = 0;
+			TileView childView = null;
+			while ( ( tileFound == false ) && ( childCount < ChildCount ) )
+			{
+				childView = ( TileView )GetChildAt( childCount++ );
+				if ( childView.TileProperty.IdentityProperty == theMove.IdentityProperty )
+				{
+					tileFound = true;
+				}
+			}
+
+			if ( tileFound == true )
+			{
+				childView.SetX( ViewXFromGrid( childView.TileProperty.GridXProperty ) );
+				childView.SetY( ViewYFromGrid( childView.TileProperty.GridYProperty ) );
+			}
+		}
+
 
 		//
 		// Private methods
@@ -100,6 +131,8 @@ namespace SliderCon
 		/// </summary>
 		private void InitialiseBoardBackground()
 		{
+			Log.Debug( LogTag, string.Format( "Enter InitialiseBoardBackground {0}", ++initialiseBoardCount ) );
+
 			// Work out how much the board bitmap needs to be scaled
 			float aspectFactor = Math.Min( ( float )Height / ( float )boardBitmap.Height, ( float )Width / ( float )boardBitmap.Width );
 
@@ -121,6 +154,8 @@ namespace SliderCon
 
 			// Assuming a square pixel, the number of pixels per grid postion can also be determined
 			pixelsPerGridPosition = preferredWidth / boardWidth;
+
+			Log.Debug( LogTag, string.Format( "Leave InitialiseBoardBackground {0}", initialiseBoardCount-- ) );
 		}
 
 		/// <summary>
@@ -128,6 +163,8 @@ namespace SliderCon
 		/// </summary>
 		private void LoadTiles()
 		{
+			Log.Debug( LogTag, string.Format( "Enter LoadTiles {0}", ++loadTilesCount ) );
+
 			// Remove any existing tiles
 			RemoveViews( 0, ChildCount );
 
@@ -152,6 +189,8 @@ namespace SliderCon
 
 				AddView( tileWrapper, parameters);
 			}
+
+			Log.Debug( LogTag, string.Format( "Leave LoadTiles {0}", loadTilesCount-- ) );
 		}
 
 		/// <summary>
@@ -294,17 +333,17 @@ namespace SliderCon
 						Log.Debug( LogTag, string.Format( "Tile has moved from {0}, {1} to {2}, {3}", movedTile.TileProperty.GridXProperty, movedTile.TileProperty.GridYProperty,
 							newX, newY ) );
 
-						// Position the tile's grid position
-						movedTile.TileProperty.GridXProperty = newX;
-						movedTile.TileProperty.GridYProperty = newY;
+						// Create a TileMove record for this
+						TileMove move = new TileMove( movedTile.TileProperty.IdentityProperty, movedTile.TileProperty.GridXProperty,
+							movedTile.TileProperty.GridYProperty, newX, newY );
+
+						// Update the grid used by the board
+						movementChecker.TileMoved( move );
 					}
 
 					// Align the view position to the grid position
 					movedTile.SetX( ViewXFromGrid( movedTile.TileProperty.GridXProperty ) );
 					movedTile.SetY( ViewYFromGrid( movedTile.TileProperty.GridYProperty ) );
-
-					// Update the grid used by the board
-					movementChecker.TileMoved();
 				}
 			}
 
@@ -350,8 +389,12 @@ namespace SliderCon
 			// This can be called before the view has been sized or the application initialised so check first
 			if ( ( Width > 0 ) && ( Height > 0 ) && ( movementChecker != null )  )
 			{	
-				InitialiseBoardBackground();
-				LoadTiles();
+				MainActivity.ActivityProperty.RunOnUiThread( () =>
+				{
+					InitialiseBoardBackground();
+					LoadTiles();
+
+				} );
 			}
 		}
 
@@ -395,7 +438,7 @@ namespace SliderCon
 
 		private PointF lastDraggedPosition = null;
 
-		private ICheckTileMovement movementChecker = null;
+		private GamePlayer movementChecker = null;
 		private Bitmap boardBitmap = null;
 		private List< Tile > tilesCollection = null;
 		private int boardWidth = 0;
@@ -404,6 +447,10 @@ namespace SliderCon
 		/// The log tag for this class
 		/// </summary>
 		private static readonly string LogTag = "BoardView";
+
+		private static int initialiseBoardCount = 0;
+		private static int loadTilesCount = 0;
+
 	}
 }
 

@@ -119,10 +119,11 @@ namespace SliderCon
 					initialisedOk = gameHistory.CurrentInstanceProperty.Initialise( selectedGame );
 				}
 
-				// Create a GameGrid for this game
+				// Create a GamePlayer for this game
 				if ( initialisedOk == true )
 				{
-					grid = new GameGrid( SelectedGameProperty.BoardProperty, gameHistory.CurrentInstanceProperty.TilesProperty, SelectedGameProperty.CompletionProperty );
+					player = new GamePlayer( SelectedGameProperty.BoardProperty, gameHistory.CurrentInstanceProperty.TilesProperty, SelectedGameProperty.CompletionProperty,
+						HistoryProperty.MoveHistoryProperty );
 				}
 
 				Log.Debug( LogTag, string.Format( "App initialized, setting Initialized {0}", initialisedOk ) );
@@ -165,18 +166,28 @@ namespace SliderCon
 			return savedOk;
 		}
 
-		public void ChangeToNewGame( string newGame )
+		public void ChangeToNewInstance( string newGame, GameInstance newInstance )
 		{
-			// Save the name of the selected game and load it and its instance
+			// Save the name of the selected game and load it
 			HistoryProperty.CurrentGameProperty = newGame;
 			selectedGame = games[ newGame ];
-		}
 
-		public void ChangeToNewInstance( GameInstance newInstance )
-		{
+			// Clone the instance and initialise it.
 			HistoryProperty.CurrentInstanceProperty = newInstance.Clone();
-			HistoryProperty.CurrentInstanceProperty.Initialise( SelectedGameProperty );
-			grid = new GameGrid( SelectedGameProperty.BoardProperty, HistoryProperty.CurrentInstanceProperty.TilesProperty, SelectedGameProperty.CompletionProperty );
+			HistoryProperty.CurrentInstanceProperty.Initialise( selectedGame );
+
+			// Reset the move history
+			HistoryProperty.MoveHistoryProperty.Reset();
+
+			// Must remove any delegates from the existing player
+			if ( player != null )
+			{
+				player.BackButtonProperty = null;
+			}
+
+			// Create a new GamePlayer to play this instance
+			player = new GamePlayer( selectedGame.BoardProperty, HistoryProperty.CurrentInstanceProperty.TilesProperty, selectedGame.CompletionProperty,
+				HistoryProperty.MoveHistoryProperty );
 		}
 
 		/// <summary>
@@ -280,14 +291,14 @@ namespace SliderCon
 		}
 
 		/// <summary>
-		/// Gets the game grid property.
+		/// Gets the GamePlayer property.
 		/// </summary>
-		/// <value>The game grid property.</value>
-		public GameGrid GameGridProperty
+		/// <value>The GamePlayer property.</value>
+		public GamePlayer GamePlayerProperty
 		{
 			get
 			{
-				return grid;
+				return player;
 			}
 		}
 
@@ -390,11 +401,17 @@ namespace SliderCon
 					loadedOk = false;
 				}
 			}
-			else
+
+			// If the History instance has not been deserialised (or there was no file) then create a new one
+			if ( gameHistory == null )
 			{
 				// Need to create an empty History with the first available game as the current game
 				gameHistory = new History();
 				gameHistory.CurrentGameProperty = GameNamesProperty[ 0 ];
+
+				// Create an empty move history
+				gameHistory.MoveHistoryProperty = new MoveHistory();
+				gameHistory.MoveHistoryProperty.TileMovesProperty = new List<TileMove>();
 			}
 
 			return loadedOk;
@@ -477,9 +494,9 @@ namespace SliderCon
 		private Game selectedGame = null;
 
 		/// <summary>
-		/// The game grid for the loaded game instance.
+		/// The game player for the loaded game instance.
 		/// </summary>
-		private GameGrid grid = null;
+		private GamePlayer player = null;
 
 		/// <summary>
 		/// The log tag for this class

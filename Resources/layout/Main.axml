@@ -3,16 +3,80 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/topStatusLayout"
+        android:paddingTop="1dp"
+        android:background="#ffbbbbbb">
+        <TextView
+            android:text="Moves "
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/movesLabel"
+            android:singleLine="true"
+            android:layout_gravity="center"
+            android:layout_centerVertical="true"
+            android:paddingLeft="1dp" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/movesCountLayout"
+            android:background="@drawable/customborder"
+            android:layout_gravity="center_vertical"
+            android:splitMotionEvents="false"
+            android:paddingTop="1dp"
+            android:paddingBottom="1dp"
+            android:layout_toRightOf="@id/movesLabel"
+            android:layout_centerVertical="true">
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/movesCount"
+                android:text="8888"
+                android:singleLine="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#ffbbbbbb"
+                android:paddingTop="1dp"
+                android:paddingRight="1dp"
+                android:paddingBottom="1dp"
+                android:paddingLeft="1dp" />
+        </LinearLayout>
+        <Button
+            android:text="Reset"
+            android:id="@+id/resetButton"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="false"
+            android:enabled="true"
+            android:visibility="visible"
+            android:clickable="true" />
+        <Button
+            android:text="Back"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:id="@+id/backButton"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/resetButton"
+            android:enabled="true"
+            android:visibility="visible"
+            android:clickable="true" />
+    </RelativeLayout>
     <SliderCon.BoardView
         android:id="@+id/gameboard"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1" />
     <TextView
-        android:text="Large Text"
+        android:text="No game loaded"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/gameName"
+        android:layout_height="60dp"
         android:inputType="none" />
 </LinearLayout>

@@ -73,6 +73,12 @@ namespace SliderCon
 				{
 					initialisedOk = true;
 				}
+
+				// If no Exclusion instance has been deserialised then create an empty one
+				if ( ExclusionProperty == null )
+				{
+					ExclusionProperty = new Exclusion();
+				}
 			}
 			else
 			{
@@ -80,6 +86,15 @@ namespace SliderCon
 			}
 
 			return initialisedOk;
+		}
+
+		/// <summary>
+		/// Apply the border specified in the ExclusionProperty to the supplied grid
+		/// </summary>
+		/// <param name="grid">The grid to apply the border to.</param>
+		public void ApplyBorderToGrid( int [ , ] grid )
+		{
+			ExclusionProperty.Apply( grid, -1 );
 		}
 
 		[XmlAttribute( "width" ) ]

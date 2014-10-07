@@ -152,6 +152,26 @@ namespace SliderCon
 			return transformedTile;
 		}
 
+		/// <summary>
+		/// Apply this tile to the specified grid
+		/// </summary>
+		/// <param name="grid">Grid.</param>
+		public void ApplyTileToGrid( int [ , ] grid )
+		{
+			ExclusionProperty.Apply( grid, GridNumberProperty, HeightProperty, WidthProperty, GridXProperty, GridYProperty );
+		}
+
+		/// <summary>
+		/// Checks whether thea tile can be positioned at the specified location
+		/// </summary>
+		/// <returns><c>true</c>, if move is possible, <c>false</c> otherwise.</returns>
+		/// <param name="newX">New x.</param>
+		/// <param name="newY">New y.</param>
+		public bool CheckMove( int [ , ] grid, int newX, int newY )
+		{
+			return ExclusionProperty.CheckApplication( grid, GridNumberProperty, newX, newY );
+		}
+			
 		[XmlAttribute( "identity" ) ]
 		/// <summary>
 		/// Gets or sets the identity property.
@@ -162,7 +182,6 @@ namespace SliderCon
 			get;
 			set;
 		}
-
 
 		[XmlAttribute( "width" ) ]
 		/// <summary>
@@ -188,7 +207,7 @@ namespace SliderCon
 
 		[XmlAttribute( "image" ) ]
 		/// <summary>
-		/// Gets or sets the image name property.
+		/// Sets the image name property. Required for deserialisation only
 		/// </summary>
 		/// <value>The image name property.</value>
 		public string ImageNameProperty
@@ -199,7 +218,7 @@ namespace SliderCon
 
 		[XmlElement( "Exclusion" ) ]
 		/// <summary>
-		/// Gets or sets the Exclusion property.
+		/// Sets the Exclusion property. Required for deserialisation only
 		/// This specifies which grid positions are not part of the tile and thus allows for non-rectiniar tiles
 		/// </summary>
 		/// <value>The Exclusion property.</value>
@@ -250,8 +269,19 @@ namespace SliderCon
 		/// <value>The x grid property.</value>
 		public int GridXProperty
 		{
-			get;
-			set;
+			get
+			{
+				return gridX;
+			}
+
+			set
+			{
+				gridX = value;
+				if ( AssociatedTemplateProperty != null )
+				{
+					AssociatedTemplateProperty.XProperty = gridX;
+				}
+			}
 		}
 
 		/// <summary>
@@ -260,6 +290,27 @@ namespace SliderCon
 		/// <value>The y grid property.</value>
 		public int GridYProperty
 		{
+			get
+			{
+				return gridY;
+			}
+
+			set
+			{
+				gridY = value;
+				if ( AssociatedTemplateProperty != null )
+				{
+					AssociatedTemplateProperty.YProperty = gridY;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the associated template property.
+		/// </summary>
+		/// <value>The associated template property.</value>
+		public TileTemplate AssociatedTemplateProperty
+		{
 			get;
 			set;
 		}
@@ -267,6 +318,16 @@ namespace SliderCon
 		//
 		// Private data
 		//
+
+		/// <summary>
+		/// The grid X coordinate
+		/// </summary>
+		private int gridX = 0;
+
+		/// <summary>
+		/// The grid Y coordinate
+		/// </summary>
+		private int gridY = 0;
 
 		/// <summary>
 		/// The image for the tile.

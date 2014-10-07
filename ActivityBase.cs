@@ -54,6 +54,9 @@ namespace SliderCon
 
 		/// <summary>
 		/// Raises the resume event.
+		/// Display a 'loading..' message.
+		/// Set up a delegate to call when the application data has been initialised.
+		/// Start the application initialisation process.
 		/// </summary>
 		protected override void OnResume()
 		{
@@ -112,7 +115,7 @@ namespace SliderCon
 
 		/// <summary>
 		/// Called as part of the activity lifecycle when an activity is going into
-		///  the background, but has not (yet) been killed.
+		/// the background, but has not (yet) been killed.
 		/// </summary>
 		protected override void OnPause()
 		{
@@ -126,6 +129,7 @@ namespace SliderCon
 				ApplicationData.InstanceProperty.initialisationDelegate -= initialisedHandler;
 			}
 
+			// Hide the progress bar
 			if ( progress != null )
 			{
 				progress.Dismiss();

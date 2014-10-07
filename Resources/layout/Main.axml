@@ -11,7 +11,7 @@
         android:paddingTop="1dp"
         android:background="#ffbbbbbb">
         <TextView
-            android:text="Moves "
+            android:text="Move "
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -19,7 +19,8 @@
             android:singleLine="true"
             android:layout_gravity="center"
             android:layout_centerVertical="true"
-            android:paddingLeft="1dp" />
+            android:paddingLeft="1dp"
+            android:textColor="#ff000000" />
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"
@@ -37,14 +38,33 @@
                 android:id="@+id/movesCount"
                 android:text="8888"
                 android:singleLine="true"
-                android:layout_width="wrap_content"
+                android:layout_width="45dp"
                 android:layout_height="wrap_content"
                 android:background="#ffbbbbbb"
                 android:paddingTop="1dp"
                 android:paddingRight="1dp"
                 android:paddingBottom="1dp"
-                android:paddingLeft="1dp" />
+                android:paddingLeft="1dp"
+                android:textColor="#ff000000" />
         </LinearLayout>
+        <TextView
+            android:text="   Min:"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/movesCountLayout"
+            android:layout_centerVertical="true"
+            android:id="@+id/minCountLabel"
+            android:textColor="#ff000000" />
+        <TextView
+            android:text="8888"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/minCountLabel"
+            android:layout_centerVertical="true"
+            android:id="@+id/minCount"
+            android:textColor="#ff000000" />
         <Button
             android:text="Reset"
             android:id="@+id/resetButton"

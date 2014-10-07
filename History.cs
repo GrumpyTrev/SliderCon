@@ -75,6 +75,13 @@ namespace SliderCon
 			set;
 		}
 
+		[XmlElement( "CompletionRecord" ) ]
+		public CompletionRecord CompletionRecordProperty
+		{
+			get;
+			set;
+		}
+
 	}
 }
 

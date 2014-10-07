@@ -11,7 +11,7 @@
 // File Description
 // ------------------
 //
-// Purpose:      The App class is used to provide a Singleton class for Application wide data objects.
+// Purpose:      The ApplicationData class is used to provide a Singleton class for Application wide data objects.
 //
 // Description:  As purpose
 //
@@ -102,6 +102,7 @@ namespace SliderCon
 					}
 					else
 					{
+						Log.Debug( LogTag, "Game [%0] saved in history does not exist", gameHistory.CurrentGameProperty );
 						initialisedOk = false;
 					}
 				}
@@ -126,7 +127,7 @@ namespace SliderCon
 						HistoryProperty.MoveHistoryProperty );
 				}
 
-				Log.Debug( LogTag, string.Format( "App initialized, setting Initialized {0}", initialisedOk ) );
+				Log.Debug( LogTag, string.Format( "ApplicationData initialised, setting Initialised {0}", initialisedOk ) );
 
 				// Set our initialisation flag so we know that we're all setup
 				IsInitialisedProperty = true;
@@ -166,6 +167,11 @@ namespace SliderCon
 			return savedOk;
 		}
 
+		/// <summary>
+		/// Changes to new games instance.
+		/// </summary>
+		/// <param name="newGame">New game.</param>
+		/// <param name="newInstance">New instance.</param>
 		public void ChangeToNewInstance( string newGame, GameInstance newInstance )
 		{
 			// Save the name of the selected game and load it
@@ -222,6 +228,44 @@ namespace SliderCon
 		}
 
 		/// <summary>
+		/// Gets the named game.
+		/// </summary>
+		/// <returns>The named game.</returns>
+		/// <param name="gameName">Game name.</param>
+		public Game GetNamedGame( string gameName )
+		{
+			Game namedGame = null;
+			if ( games.ContainsKey( gameName ) == true )
+			{
+				namedGame = games[ gameName ];
+			}
+
+			return namedGame;
+		}
+
+		public string GetCompletionItemForInstance()
+		{
+			string itemCount = "";
+
+			int count = HistoryProperty.CompletionRecordProperty.GetMoveCountForInstance( HistoryProperty.CurrentInstanceProperty.FullNameProperty );
+
+			if ( count > 0 )
+			{
+				itemCount = count.ToString();
+			}
+
+			return itemCount;
+		}
+
+		public void AddCompletionItem()
+		{
+			// Add a completion item to the completion record
+			CompletionItem item = new CompletionItem( HistoryProperty.CurrentInstanceProperty.FullNameProperty,
+				HistoryProperty.MoveHistoryProperty.MoveCountProperty );
+			HistoryProperty.CompletionRecordProperty.AddCompletionItem( item );
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether this instance is initialised property.
 		/// </summary>
 		/// <value><c>true</c> if this instance is initialised property; otherwise, <c>false</c>.</value>
@@ -232,7 +276,7 @@ namespace SliderCon
 		}
 
 		/// <summary>
-		/// The single instance of the App class
+		/// The single instance of the ApplicationData class
 		/// </summary>
 		public static ApplicationData InstanceProperty
 		{
@@ -259,17 +303,9 @@ namespace SliderCon
 		}
 
 		/// <summary>
-		/// Gets the names of the availbale games property.
+		/// Gets the game names property.
 		/// </summary>
-		/// <value>The games property.</value>
-		public Dictionary< string, Game > GamesProperty
-		{
-			get
-			{
-				return games;
-			}
-		}
-
+		/// <value>The game names property.</value>
 		public string[] GameNamesProperty
 		{
 			get
@@ -393,6 +429,15 @@ namespace SliderCon
 					using ( Stream reader = File.Open( historyFileName, FileMode.Open ) )
 					{
 						gameHistory = ( History )deserializer.Deserialize( reader ); 
+
+						if ( gameHistory != null )
+						{
+							if ( gameHistory.CompletionRecordProperty == null )
+							{
+								gameHistory.CompletionRecordProperty = new CompletionRecord();
+								gameHistory.CompletionRecordProperty.CompletionItemsProperty = new List< CompletionItem >();
+							}
+						}
 					}
 				}
 				catch ( Exception anyException )
@@ -412,6 +457,10 @@ namespace SliderCon
 				// Create an empty move history
 				gameHistory.MoveHistoryProperty = new MoveHistory();
 				gameHistory.MoveHistoryProperty.TileMovesProperty = new List<TileMove>();
+
+				// Create an empty CompletionRecord
+				gameHistory.CompletionRecordProperty = new CompletionRecord();
+				gameHistory.CompletionRecordProperty.CompletionItemsProperty = new List< CompletionItem >();
 			}
 
 			return loadedOk;
@@ -435,11 +484,10 @@ namespace SliderCon
 				int gameIndex = 0;
 				while ( ( gamesLoaded == true ) && ( gameIndex < gamePaths.Length ) )
 				{
-					Game loadedGame = LoadGame( System.IO.Path.GetFileName( gamePaths[ gameIndex ] ) );
+					Game loadedGame = LoadGame( System.IO.Path.GetFileName( gamePaths[ gameIndex++ ] ) );
 					if ( loadedGame != null )
 					{
 						games[ loadedGame.NameProperty ] = loadedGame;
-						gameIndex++;
 					}
 					else
 					{

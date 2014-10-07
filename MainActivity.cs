@@ -125,9 +125,9 @@ namespace SliderCon
 			resetButton.Click += delegate 
 			{
 				ApplicationData.InstanceProperty.ChangeToNewInstance( ApplicationData.InstanceProperty.HistoryProperty.CurrentGameProperty,
-					ApplicationData.InstanceProperty.HistoryProperty.CurrentInstanceProperty );
+					ApplicationData.InstanceProperty.SelectedGameProperty.GetGameInstance( 
+						ApplicationData.InstanceProperty.HistoryProperty.CurrentInstanceProperty.FullNameProperty ) );
 				FinishedInitialising();
-
 			};
 
 			activityInstance = this;
@@ -156,6 +156,9 @@ namespace SliderCon
 		{
 			// Display the game name
 			FindViewById<TextView>( Resource.Id.gameName ).Text = ApplicationData.InstanceProperty.HistoryProperty.CurrentInstanceProperty.FullNameProperty;
+
+			// Display the minimum move count associated with the instance
+			FindViewById< TextView >( Resource.Id.minCount ).Text = ApplicationData.InstanceProperty.GetCompletionItemForInstance();
 
 			// Initialise the BoardView with the loaded game.
 			// This initialisation includes scaling and displaying the board and then displaying each tile in the current game instance.
@@ -196,7 +199,9 @@ namespace SliderCon
 			dialogueBuilder.SetTitle( Resource.String.action_select_game );    
 			dialogueBuilder.SetItems( ApplicationData.InstanceProperty.GameNamesProperty, ( sender, args ) => 
 			{
-				Game selectedGame = ApplicationData.InstanceProperty.GamesProperty[ ApplicationData.InstanceProperty.GameNamesProperty[ args.Which ] ];
+				// Determine which game has been selected and display the game instance selection dialogue
+				string selectedGameName = ( string )( ( AlertDialog )sender ).ListView.Adapter.GetItem( args.Which );
+				Game selectedGame = ApplicationData.InstanceProperty.GetNamedGame( selectedGameName );
 
 				ShowSelectGameInstanceDialogue( selectedGame, selectedGame );
 			} );
@@ -253,6 +258,12 @@ namespace SliderCon
 
 		private void GameCompleted()
 		{
+			// Add a completion item to the completion record
+			ApplicationData.InstanceProperty.AddCompletionItem();
+
+			// Display the minimum move count associated with the instance
+			FindViewById< TextView >( Resource.Id.minCount ).Text = ApplicationData.InstanceProperty.GetCompletionItemForInstance();
+
 			// For now just display an alert dialogue
 			AlertDialog.Builder dialogueBuilder = new AlertDialog.Builder( this );
 			dialogueBuilder.SetMessage( Resource.String.alert_completion_what_next );

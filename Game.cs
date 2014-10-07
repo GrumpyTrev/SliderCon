@@ -135,6 +135,23 @@ namespace SliderCon
 			return tileFound;
 		}
 
+		/// <summary>
+		/// Gets the game instance identified by the instance name.
+		/// </summary>
+		/// <returns>The game instance.</returns>
+		/// <param name="instanceName">Instance name.</param>
+		public GameInstance GetGameInstance( string instanceName )
+		{
+			GameInstance retrievedInstance = null;
+
+			if ( gameInstances.ContainsKey( instanceName ) == true )
+			{
+				retrievedInstance = gameInstances[ instanceName ];
+			}
+
+			return retrievedInstance;
+		}
+
 		[XmlAttribute( "name" ) ]
 		/// <summary>
 		/// Gets or sets the name property.

@@ -97,8 +97,14 @@ namespace SliderCon
 
 			// Copy the simple members
 			clonedInstance.NameProperty = NameProperty;
-			clonedInstance.TileTemplatesProperty = TileTemplatesProperty;
 			clonedInstance.FullNameProperty = FullNameProperty;
+
+			// Clone the TileTemplatesProperty
+			clonedInstance.TileTemplatesProperty = new List< TileTemplate >();
+			foreach ( TileTemplate template in TileTemplatesProperty )
+			{
+				clonedInstance.TileTemplatesProperty.Add( template.Clone() );
+			}
 
 			return clonedInstance;
 		}

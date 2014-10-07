@@ -76,6 +76,7 @@
     <Compile Include="MoveHistory.cs" />
     <Compile Include="TileMove.cs" />
     <Compile Include="GamePlayer.cs" />
+    <Compile Include="CompletionRecord.cs" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\Main.axml" />

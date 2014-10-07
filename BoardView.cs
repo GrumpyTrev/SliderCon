@@ -13,7 +13,7 @@
 //
 // Purpose:      The BoardView class displays the current state of a game.
 //
-// Description:  As purpose for now
+// Description:  As purpose.
 //
 //
 //
@@ -117,6 +117,10 @@ namespace SliderCon
 				childView.SetX( ViewXFromGrid( childView.TileProperty.GridXProperty ) );
 				childView.SetY( ViewYFromGrid( childView.TileProperty.GridYProperty ) );
 			}
+			else
+			{
+				Log.Debug( LogTag, string.Format( "Could not find tile {0}", theMove.IdentityProperty ) );
+			}
 		}
 
 
@@ -131,8 +135,6 @@ namespace SliderCon
 		/// </summary>
 		private void InitialiseBoardBackground()
 		{
-			Log.Debug( LogTag, string.Format( "Enter InitialiseBoardBackground {0}", ++initialiseBoardCount ) );
-
 			// Work out how much the board bitmap needs to be scaled
 			float aspectFactor = Math.Min( ( float )Height / ( float )boardBitmap.Height, ( float )Width / ( float )boardBitmap.Width );
 
@@ -154,8 +156,6 @@ namespace SliderCon
 
 			// Assuming a square pixel, the number of pixels per grid postion can also be determined
 			pixelsPerGridPosition = preferredWidth / boardWidth;
-
-			Log.Debug( LogTag, string.Format( "Leave InitialiseBoardBackground {0}", initialiseBoardCount-- ) );
 		}
 
 		/// <summary>
@@ -163,8 +163,6 @@ namespace SliderCon
 		/// </summary>
 		private void LoadTiles()
 		{
-			Log.Debug( LogTag, string.Format( "Enter LoadTiles {0}", ++loadTilesCount ) );
-
 			// Remove any existing tiles
 			RemoveViews( 0, ChildCount );
 
@@ -189,8 +187,6 @@ namespace SliderCon
 
 				AddView( tileWrapper, parameters);
 			}
-
-			Log.Debug( LogTag, string.Format( "Leave LoadTiles {0}", loadTilesCount-- ) );
 		}
 
 		/// <summary>
@@ -393,26 +389,45 @@ namespace SliderCon
 				{
 					InitialiseBoardBackground();
 					LoadTiles();
-
 				} );
 			}
 		}
 
+		/// <summary>
+		/// Determine the pixel X coordinate from the grid X coordinate
+		/// </summary>
+		/// <returns>The X from grid.</returns>
+		/// <param name="gridPosition">Grid position.</param>
 		private int ViewXFromGrid( int gridPosition )
 		{
 			return ( gridPosition * pixelsPerGridPosition ) + xOffset;
 		}
 
+		/// <summary>
+		/// Determine the grid X coordinate from the pixel X coordinate
+		/// </summary>
+		/// <returns>The X from view.</returns>
+		/// <param name="viewPosition">View position.</param>
 		private int GridXFromView( float viewPosition )
 		{
 			return ( int )Math.Ceiling( ( viewPosition - xOffset ) / pixelsPerGridPosition );
 		}
 
+		/// <summary>
+		/// Determine the pixel Y coordinate from the grid Y coordinate
+		/// </summary>
+		/// <returns>The Y from grid.</returns>
+		/// <param name="gridPosition">Grid position.</param>
 		private int ViewYFromGrid( int gridPosition )
 		{
 			return ( gridPosition * pixelsPerGridPosition ) + yOffset;
 		}
 
+		/// <summary>
+		/// Determine the grid Y coordinate from the pixel Y coordinate
+		/// </summary>
+		/// <returns>The Y from view.</returns>
+		/// <param name="viewPosition">View position.</param>
 		private int GridYFromView( float viewPosition )
 		{
 			return (int )Math.Ceiling( ( viewPosition - yOffset ) / pixelsPerGridPosition );
@@ -434,23 +449,40 @@ namespace SliderCon
 		/// </summary>
 		private int yOffset = 0;
 
+		/// <summary>
+		/// The tile being moved.
+		/// </summary>
 		private TileView movedTile = null;
 
+		/// <summary>
+		/// The last dragged position.
+		/// </summary>
 		private PointF lastDraggedPosition = null;
 
+		/// <summary>
+		/// The movement checker.
+		/// </summary>
 		private GamePlayer movementChecker = null;
+
+		/// <summary>
+		/// The board bitmap.
+		/// </summary>
 		private Bitmap boardBitmap = null;
+
+		/// <summary>
+		/// The tiles collection.
+		/// </summary>
 		private List< Tile > tilesCollection = null;
+
+		/// <summary>
+		/// The width of the board.
+		/// </summary>
 		private int boardWidth = 0;
 
 		/// <summary>
 		/// The log tag for this class
 		/// </summary>
 		private static readonly string LogTag = "BoardView";
-
-		private static int initialiseBoardCount = 0;
-		private static int loadTilesCount = 0;
-
 	}
 }
 

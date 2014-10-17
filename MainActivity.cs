@@ -158,7 +158,7 @@ namespace SliderCon
 			FindViewById<TextView>( Resource.Id.gameName ).Text = ApplicationData.InstanceProperty.HistoryProperty.CurrentInstanceProperty.FullNameProperty;
 
 			// Display the minimum move count associated with the instance
-			FindViewById< TextView >( Resource.Id.minCount ).Text = ApplicationData.InstanceProperty.GetCompletionItemForInstance();
+			FindViewById< TextView >( Resource.Id.minCount ).Text = ApplicationData.InstanceProperty.GetCompletionItemForCurrentInstance();
 
 			// Initialise the BoardView with the loaded game.
 			// This initialisation includes scaling and displaying the board and then displaying each tile in the current game instance.
@@ -209,17 +209,33 @@ namespace SliderCon
 			dialogueBuilder.Create().Show();
 		}
 
+		/// <summary>
+		/// The DialogCancelListener class is used to detect when a dialogue has been cancelled and to call a specified delegate
+		/// </summary>
 		class DialogCancelListener : Java.Lang.Object, IDialogInterfaceOnCancelListener
 		{
-			public DialogCancelListener (Action cleanup)
+			/// <summary>
+			/// Constructor specifying the cancel action
+			/// </summary>
+			/// <param name="cleanup">The action to perform when the dialogue is cancelled</param>
+			public DialogCancelListener( Action cancelAction )
 			{
-				this.cleanup = cleanup;
+				actionToPerformOnCancel = cancelAction;
 			}
-			Action cleanup;
-			public void OnCancel (IDialogInterface dialog)
+
+			/// <summary>
+			/// This method will be invoked when the dialog is canceled.
+			/// </summary>
+			/// <param name="dialog">The dialog that was canceled will be passed into the method.</param>
+			public void OnCancel ( IDialogInterface dialog )
 			{
-				cleanup ();
+				actionToPerformOnCancel();
 			}
+
+			/// <summary>
+			/// The action to perform on cancel.
+			/// </summary>
+			private readonly Action actionToPerformOnCancel = null;
 		}
 
 		/// <summary>
@@ -228,10 +244,31 @@ namespace SliderCon
 		/// </summary>
 		private void ShowSelectGameInstanceDialogue( Game selectedGame, GameContainer container )
 		{
-			AlertDialog.Builder dialogueBuilder = new AlertDialog.Builder( this );
+			// Get the list of instances and mark those that have already been completed.
+			string[] itemText = new string[ container.ItemsProperty.Count ];
+			for ( int itemIndex = 0; itemIndex < container.ItemsProperty.Count; itemIndex++ )
+			{
+				GameInstance item = container.GetIndexedItem( itemIndex ) as GameInstance; 
+				if ( item != null )
+				{
+					if ( ApplicationData.InstanceProperty.HistoryProperty.CompletionRecordProperty.GetMoveCountForInstance( item.FullNameProperty ) != 0 )
+					{
+						itemText[ itemIndex ] = item.NameProperty + " [c]";
+					}
+					else
+					{
+						itemText[ itemIndex ] = item.NameProperty;
+					}
+				}
+				else
+				{
+					itemText[ itemIndex ] = container.ItemsProperty[ itemIndex ];
+				}
+			}
 
+			AlertDialog.Builder dialogueBuilder = new AlertDialog.Builder( this );
 			dialogueBuilder.SetTitle( Resource.String.action_select_game_instance );    
-			dialogueBuilder.SetItems( container.ItemsProperty.ToArray(), ( sender, args ) => 
+			dialogueBuilder.SetItems( itemText, ( sender, args ) => 
 			{
 				object selectedItem = container.GetIndexedItem( args.Which );
 				if ( ( selectedItem is GameContainer ) == true )
@@ -253,16 +290,18 @@ namespace SliderCon
 
 			} ) );
 
-			dialogueBuilder.Create().Show();
-		}
+			AlertDialog theDialogue = dialogueBuilder.Create();
 
+			theDialogue.Show();
+		}
+		
 		private void GameCompleted()
 		{
 			// Add a completion item to the completion record
 			ApplicationData.InstanceProperty.AddCompletionItem();
 
 			// Display the minimum move count associated with the instance
-			FindViewById< TextView >( Resource.Id.minCount ).Text = ApplicationData.InstanceProperty.GetCompletionItemForInstance();
+			FindViewById< TextView >( Resource.Id.minCount ).Text = ApplicationData.InstanceProperty.GetCompletionItemForCurrentInstance();
 
 			// For now just display an alert dialogue
 			AlertDialog.Builder dialogueBuilder = new AlertDialog.Builder( this );

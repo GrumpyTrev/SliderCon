@@ -40,6 +40,7 @@ using System;
 using System.IO;
 using Android.Content.Res;
 using Android.Util;
+using Android.Content;
 
 namespace SliderCon
 {
@@ -54,53 +55,87 @@ namespace SliderCon
 		/// <returns><c>true</c>, if files was updated, <c>false</c> otherwise.</returns>
 		/// <param name="gamesDirectoryName">Name of the directory containing all the Game files</param>
 		/// <param name="externalDirectoryName">Name of the directory on external storage to copy the files to</param>
-		public static bool UpdateFiles( string gamesDirectoryName, string externalDirectoryName, AssetManager assets )
+		public static bool UpdateFiles( string gamesDirectoryName, string externalDirectoryName, AssetManager assets, ISharedPreferences preferences )
 		{
 			bool updatedOk = false;
 
-			try 
+			// Check whether or not the files should be updated
+			if ( UpdateFilesIsNecessary( preferences ) == true )
 			{
-				// Directory to store the games in
-				string externalGamesDirectoryName = Path.Combine( Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, externalDirectoryName, gamesDirectoryName );
-				Directory.CreateDirectory( externalGamesDirectoryName );
-
-				// Get the names of all the game folders in the GameFiles directory
-				string[] games = assets.List( gamesDirectoryName );
-
-				// Copy each game
-				foreach ( string gameName in games )
+				try 
 				{
-					// Create a directory for the game
-					string externalGameDirectoryName = Path.Combine( externalGamesDirectoryName, gameName );
-					Directory.CreateDirectory( externalGameDirectoryName );
+					// Directory to store the games in
+					string externalGamesDirectoryName = Path.Combine( Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, externalDirectoryName, gamesDirectoryName );
+					Directory.CreateDirectory( externalGamesDirectoryName );
 
-					// Get the files for this game
-					string assetGameDirectoryName = Path.Combine( gamesDirectoryName, gameName );
-					string[] files = assets.List( Path.Combine( assetGameDirectoryName ) );
+					// Get the names of all the game folders in the GameFiles directory
+					string[] games = assets.List( gamesDirectoryName );
 
-					foreach ( string fileName in files )
+					// Copy each game
+					foreach ( string gameName in games )
 					{
-						using ( Stream assetStream = assets.Open( Path.Combine( assetGameDirectoryName, fileName ) ) )
-						using ( Stream copyStream = File.Create( Path.Combine( externalGameDirectoryName, fileName ) ) )
+						// Create a directory for the game
+						string externalGameDirectoryName = Path.Combine( externalGamesDirectoryName, gameName );
+						Directory.CreateDirectory( externalGameDirectoryName );
+
+						// Get the files for this game
+						string assetGameDirectoryName = Path.Combine( gamesDirectoryName, gameName );
+						string[] files = assets.List( Path.Combine( assetGameDirectoryName ) );
+
+						foreach ( string fileName in files )
 						{
-							assetStream.CopyTo( copyStream );
+							using ( Stream assetStream = assets.Open( Path.Combine( assetGameDirectoryName, fileName ) ) )
+							using ( Stream copyStream = File.Create( Path.Combine( externalGameDirectoryName, fileName ) ) )
+							{
+								assetStream.CopyTo( copyStream );
+							}
 						}
 					}
+
+					// Mark the files as copied
+					MarkFilesAsCopied( preferences );
+					updatedOk = true;
+				} 
+				catch ( IOException fileException ) 
+				{
+					Log.Debug( LogTag, fileException.Message );
 				}
-
+				catch ( Exception anyException )
+				{
+					Log.Debug( LogTag, anyException.Message );
+				}
+			}
+			else
+			{
 				updatedOk = true;
-			} 
-			catch ( IOException fileException ) 
-			{
-				Log.Debug( LogTag, fileException.Message );
 			}
-			catch ( Exception anyException )
-			{
-				Log.Debug( LogTag, anyException.Message );
-			}
-
+		
 			return updatedOk;
 		}
+
+		//
+		// Private methods
+		//
+
+		private static bool UpdateFilesIsNecessary( ISharedPreferences preferences )
+		{
+			bool required = true;
+
+			if ( preferences.Contains( "Updated" ) == true ) 
+			{
+				required = preferences.GetBoolean( "Updated", true );
+			}
+
+			return required;
+		}
+
+		private static void MarkFilesAsCopied( ISharedPreferences preferences )
+		{
+			ISharedPreferencesEditor editor = preferences.Edit();
+			editor.PutBoolean( "Updated", false );
+			editor.Commit ();
+		}
+
 
 		//
 		// Private data

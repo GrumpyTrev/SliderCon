@@ -94,38 +94,10 @@ namespace SliderCon
 					initialisedOk = LoadGameHistory();
 				}
 
-				// Load the current game definition
+				// Initialise the selected game and instance for playing
 				if ( initialisedOk == true )
 				{
-					if ( games.ContainsKey( gameHistory.CurrentGameProperty ) == true )
-					{
-						selectedGame = games[ gameHistory.CurrentGameProperty ];
-					}
-					else
-					{
-						Log.Debug( LogTag, "Game [%0] saved in history does not exist", gameHistory.CurrentGameProperty );
-						initialisedOk = false;
-					}
-				}
-
-				// Initialise the current game instance
-				if ( initialisedOk == true )
-				{
-					// If there is no GameInstance in the history then clone the first instance in the current game, store in the history
-					// and initialise it against the current game
-					if ( gameHistory.CurrentInstanceProperty == null )
-					{
-						gameHistory.CurrentInstanceProperty = selectedGame.GameInstancesProperty[ 0 ].Clone();
-					}
-
-					initialisedOk = gameHistory.CurrentInstanceProperty.Initialise( selectedGame );
-				}
-
-				// Create a GamePlayer for this game
-				if ( initialisedOk == true )
-				{
-					player = new GamePlayer( SelectedGameProperty.BoardProperty, gameHistory.CurrentInstanceProperty.TilesProperty, SelectedGameProperty.CompletionProperty,
-						HistoryProperty.MoveHistoryProperty );
+					initialisedOk = InitialiseInstanceForPlaying();
 				}
 
 				Log.Debug( LogTag, string.Format( "ApplicationData initialised, setting Initialised {0}", initialisedOk ) );
@@ -175,26 +147,14 @@ namespace SliderCon
 		/// <param name="newInstance">New instance.</param>
 		public void ChangeToNewInstance( string newGame, GameInstance newInstance )
 		{
-			// Save the name of the selected game and load it
-			HistoryProperty.CurrentGameProperty = newGame;
-			selectedGame = games[ newGame ];
+			// Save the name of the selected game
+			gameHistory.CurrentGameProperty = newGame;
 
-			// Clone the instance and initialise it.
-			HistoryProperty.CurrentInstanceProperty = newInstance.Clone();
-			HistoryProperty.CurrentInstanceProperty.Initialise( selectedGame );
+			// Clone the instance
+			gameHistory.CurrentInstanceProperty = newInstance.Clone();
 
-			// Reset the move history
-			HistoryProperty.MoveHistoryProperty.Reset();
-
-			// Must remove any delegates from the existing player
-			if ( player != null )
-			{
-				player.BackButtonProperty = null;
-			}
-
-			// Create a new GamePlayer to play this instance
-			player = new GamePlayer( selectedGame.BoardProperty, HistoryProperty.CurrentInstanceProperty.TilesProperty, selectedGame.CompletionProperty,
-				HistoryProperty.MoveHistoryProperty );
+			// Initialise the instance and associated player
+			InitialiseInstanceForPlaying();
 		}
 
 		/// <summary>
@@ -245,14 +205,23 @@ namespace SliderCon
 		}
 
 		/// <summary>
-		/// Gets the completion item for current instance.
+		/// Gets the move count item for current instance.
+		/// </summary>
+		/// <returns>The move count for current instance.</returns>
+		public string GetMoveCountForCurrentInstance()
+		{
+			return GetMoveCountForInstance( gameHistory.CurrentInstanceProperty.FullNameProperty );
+		}
+
+		/// <summary>
+		/// Gets the completion item for the speciifed instance.
 		/// </summary>
 		/// <returns>The completion item for current instance.</returns>
-		public string GetCompletionItemForCurrentInstance()
+		public string GetMoveCountForInstance( string instanceName )
 		{
 			string itemCount = "";
 
-			int count = HistoryProperty.CompletionRecordProperty.GetMoveCountForInstance( HistoryProperty.CurrentInstanceProperty.FullNameProperty );
+			int count = gameHistory.CompletionRecordProperty.GetMoveCountForInstance( instanceName );
 
 			if ( count > 0 )
 			{
@@ -268,9 +237,9 @@ namespace SliderCon
 		public void AddCompletionItem()
 		{
 			// Add a completion item to the completion record
-			CompletionItem item = new CompletionItem( HistoryProperty.CurrentInstanceProperty.FullNameProperty,
-				HistoryProperty.MoveHistoryProperty.MoveCountProperty );
-			HistoryProperty.CompletionRecordProperty.AddCompletionItem( item );
+			CompletionItem item = new CompletionItem( gameHistory.CurrentInstanceProperty.FullNameProperty,
+				gameHistory.MoveHistoryProperty.MoveCountProperty );
+			gameHistory.CompletionRecordProperty.AddCompletionItem( item );
 		}
 
 		/// <summary>
@@ -296,17 +265,6 @@ namespace SliderCon
 				}
 
 				return instance;
-			}
-		}
-
-		/// <summary>
-		/// The game history.
-		/// </summary>
-		public History HistoryProperty
-		{
-			get
-			{
-				return gameHistory;
 			}
 		}
 
@@ -343,6 +301,24 @@ namespace SliderCon
 			get
 			{
 				return player;
+			}
+		}
+
+		/// <summary>
+		/// Gets the instance full name property.
+		/// </summary>
+		/// <value>The instance full name property.</value>
+		public string InstanceFullNameProperty
+		{
+			get
+			{
+				string fullName = "";
+				if ( gameHistory.CurrentInstanceProperty != null )
+				{
+					fullName = gameHistory.CurrentInstanceProperty.FullNameProperty;
+				}
+
+				return fullName;
 			}
 		}
 
@@ -518,6 +494,66 @@ namespace SliderCon
 			}
 
 			return gamesLoaded;
+		}
+
+		/// <summary>
+		/// Initialises the instance for playing.
+		/// </summary>
+		/// <returns><c>true</c>, if instance for playing was initialised, <c>false</c> otherwise.</returns>
+		private bool InitialiseInstanceForPlaying()
+		{
+			bool initialisedOk = true;
+
+			// Load the current game definition from the available games
+			if ( initialisedOk == true )
+			{
+				if ( games.ContainsKey( gameHistory.CurrentGameProperty ) == true )
+				{
+					selectedGame = games[ gameHistory.CurrentGameProperty ];
+				}
+				else
+				{
+					Log.Debug( LogTag, "Selected Game [%0] does not exist", gameHistory.CurrentGameProperty );
+					initialisedOk = false;
+				}
+			}
+
+			// Initialise the current game instance
+			if ( initialisedOk == true )
+			{
+				// If there is no GameInstance specified then clone the first instance in the current game.
+				if ( gameHistory.CurrentInstanceProperty == null )
+				{
+					gameHistory.CurrentInstanceProperty = selectedGame.GameInstancesProperty[ 0 ].Clone();
+				}
+
+				// Initialise the current instance against the current game
+				initialisedOk = gameHistory.CurrentInstanceProperty.Initialise( selectedGame );
+			}
+
+			// Create a GamePlayer for this game
+			if ( initialisedOk == true )
+			{
+				// Reset the move history
+				gameHistory.MoveHistoryProperty.Reset();
+
+				// Must remove any delegates from the existing player
+				if ( player != null )
+				{
+					player.BackButtonProperty = null;
+				}
+
+				// Determine which Completion to use, either the Game's or the instance's
+				Completion gameCompletion = gameHistory.CurrentInstanceProperty.CompletionProperty;
+				if ( gameCompletion == null )
+				{
+					gameCompletion = selectedGame.CompletionProperty;
+				}
+
+				player = new GamePlayer( selectedGame.BoardProperty, gameHistory.CurrentInstanceProperty.TilesProperty, gameCompletion, gameHistory.MoveHistoryProperty );
+			}
+
+			return initialisedOk;
 		}
 
 		//

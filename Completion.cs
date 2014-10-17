@@ -55,12 +55,21 @@ namespace SliderCon
 		}
 
 		[XmlElement( "TileTemplate" ) ]
+		/// <summary>
+		/// Gets or sets the tile templates property.
+		/// </summary>
+		/// <value>The tile templates property.</value>
 		public List< TileTemplate > TileTemplatesProperty
 		{
 			get;
 			set;
 		}
 
+		/// <summary>
+		/// Checks whether or not all the tiles in the completion are in their correct positions
+		/// </summary>
+		/// <returns><c>true</c>, if completion was checked, <c>false</c> otherwise.</returns>
+		/// <param name="theTiles">The tiles.</param>
 		public bool CheckCompletion( List< Tile > theTiles )
 		{
 			bool gameCompleted = true;

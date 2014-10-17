@@ -80,14 +80,11 @@ namespace SliderCon
 
 			if ( render == true )
 			{
-				MainActivity.ActivityProperty.RunOnUiThread( () =>
-				{
-					// Initialise the board background
-					InitialiseBoardBackground();
+				// Initialise the board background
+				InitialiseBoardBackground();
 
-					// Load the tiles
-					LoadTiles();
-				} );
+				// Load the tiles
+				LoadTiles();
 			}
 		}
 
@@ -385,11 +382,8 @@ namespace SliderCon
 			// This can be called before the view has been sized or the application initialised so check first
 			if ( ( Width > 0 ) && ( Height > 0 ) && ( movementChecker != null )  )
 			{	
-				MainActivity.ActivityProperty.RunOnUiThread( () =>
-				{
-					InitialiseBoardBackground();
-					LoadTiles();
-				} );
+				InitialiseBoardBackground();
+				LoadTiles();
 			}
 		}
 

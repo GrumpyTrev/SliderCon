@@ -98,6 +98,7 @@ namespace SliderCon
 			// Copy the simple members
 			clonedInstance.NameProperty = NameProperty;
 			clonedInstance.FullNameProperty = FullNameProperty;
+			clonedInstance.CompletionProperty = CompletionProperty;
 
 			// Clone the TileTemplatesProperty
 			clonedInstance.TileTemplatesProperty = new List< TileTemplate >();
@@ -146,6 +147,17 @@ namespace SliderCon
 		/// </summary>
 		/// <value>The full name of the instance</value>
 		public string FullNameProperty
+		{
+			get;
+			set;
+		}
+
+		[XmlElement( "Completion" ) ]
+		/// <summary>
+		/// Gets or sets the Completion property. This overrides any definition for the game type as a whole.
+		/// </summary>
+		/// <value>The board property.</value>
+		public Completion CompletionProperty
 		{
 			get;
 			set;

@@ -98,14 +98,6 @@ namespace SliderCon
 			return handled;
 		}
 
-		public static Activity ActivityProperty
-		{
-			get
-			{
-				return activityInstance;
-			}
-		}
-
 		//
 		// Protected methods
 		//
@@ -121,12 +113,11 @@ namespace SliderCon
 			// Set our view from the "main" layout resource
 			SetContentView( Resource.Layout.Main );
 
-			resetButton = FindViewById<Button>( Resource.Id.resetButton);
-			resetButton.Click += delegate 
+			// Set up a click handler for the reset button
+			FindViewById<Button>( Resource.Id.resetButton).Click += delegate 
 			{
-				ApplicationData.InstanceProperty.ChangeToNewInstance( ApplicationData.InstanceProperty.HistoryProperty.CurrentGameProperty,
-					ApplicationData.InstanceProperty.SelectedGameProperty.GetGameInstance( 
-						ApplicationData.InstanceProperty.HistoryProperty.CurrentInstanceProperty.FullNameProperty ) );
+				ApplicationData.InstanceProperty.ChangeToNewInstance( ApplicationData.InstanceProperty.SelectedGameProperty.NameProperty,
+					ApplicationData.InstanceProperty.SelectedGameProperty.GetGameInstance( ApplicationData.InstanceProperty.InstanceFullNameProperty ) );
 				FinishedInitialising();
 			};
 
@@ -155,10 +146,10 @@ namespace SliderCon
 		protected override void FinishedInitialising()
 		{
 			// Display the game name
-			FindViewById<TextView>( Resource.Id.gameName ).Text = ApplicationData.InstanceProperty.HistoryProperty.CurrentInstanceProperty.FullNameProperty;
+			FindViewById<TextView>( Resource.Id.gameName ).Text = ApplicationData.InstanceProperty.InstanceFullNameProperty;
 
 			// Display the minimum move count associated with the instance
-			FindViewById< TextView >( Resource.Id.minCount ).Text = ApplicationData.InstanceProperty.GetCompletionItemForCurrentInstance();
+			FindViewById< TextView >( Resource.Id.minCount ).Text = ApplicationData.InstanceProperty.GetMoveCountForCurrentInstance();
 
 			// Initialise the BoardView with the loaded game.
 			// This initialisation includes scaling and displaying the board and then displaying each tile in the current game instance.
@@ -251,7 +242,7 @@ namespace SliderCon
 				GameInstance item = container.GetIndexedItem( itemIndex ) as GameInstance; 
 				if ( item != null )
 				{
-					if ( ApplicationData.InstanceProperty.HistoryProperty.CompletionRecordProperty.GetMoveCountForInstance( item.FullNameProperty ) != 0 )
+					if ( ApplicationData.InstanceProperty.GetMoveCountForInstance( item.FullNameProperty ).Length > 0 )
 					{
 						itemText[ itemIndex ] = item.NameProperty + " [c]";
 					}
@@ -301,7 +292,7 @@ namespace SliderCon
 			ApplicationData.InstanceProperty.AddCompletionItem();
 
 			// Display the minimum move count associated with the instance
-			FindViewById< TextView >( Resource.Id.minCount ).Text = ApplicationData.InstanceProperty.GetCompletionItemForCurrentInstance();
+			FindViewById< TextView >( Resource.Id.minCount ).Text = ApplicationData.InstanceProperty.GetMoveCountForCurrentInstance();
 
 			// For now just display an alert dialogue
 			AlertDialog.Builder dialogueBuilder = new AlertDialog.Builder( this );
@@ -310,12 +301,8 @@ namespace SliderCon
 		}
 
 		//
+		// Private data
 		//
-		//
-
-		private Button resetButton = null;
-
-		private static Activity activityInstance = null;
 	}
 }
 

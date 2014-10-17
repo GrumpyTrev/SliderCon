@@ -4,7 +4,7 @@
 //
 // Project:     SliderCon
 // Task:        Activity Support
-// Filename:    App.cs
+// Filename:    ApplicationData.cs
 // Created by:  T. Simmonds
 //
 //
@@ -79,7 +79,8 @@ namespace SliderCon
 			new Task( () =>
 			{ 
 				// Copy games files from the installation to the external storage
-				bool initialisedOk = GameUpdater.UpdateFiles( GameFileDirectory, ApplicationDirectory, applicationContext.Assets );
+				bool initialisedOk = GameUpdater.UpdateFiles( GameFileDirectory, ApplicationDirectory, applicationContext.Assets,
+					applicationContext.GetSharedPreferences( "SliderCon", FileCreationMode.Private ) );
 
 				// Create a list of all the available games
 				if ( initialisedOk == true )
@@ -243,7 +244,11 @@ namespace SliderCon
 			return namedGame;
 		}
 
-		public string GetCompletionItemForInstance()
+		/// <summary>
+		/// Gets the completion item for current instance.
+		/// </summary>
+		/// <returns>The completion item for current instance.</returns>
+		public string GetCompletionItemForCurrentInstance()
 		{
 			string itemCount = "";
 
@@ -257,6 +262,9 @@ namespace SliderCon
 			return itemCount;
 		}
 
+		/// <summary>
+		/// Adds a completion item for the current instance.
+		/// </summary>
 		public void AddCompletionItem()
 		{
 			// Add a completion item to the completion record
@@ -567,6 +575,3 @@ namespace SliderCon
 		private readonly string HistoryFile = "History.xml";
 	}
 }
-
-
-

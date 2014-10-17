@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Game name="Nick Bickford" movementConstraint="none">
+	<Board width="6" height="6" image="board.png">
+		<Exclusion width="1" height="1"/>
+	</Board>
+	<Tile identity="1" width="3" height="3" movementConstraint="none" image="1.png">
+		<Exclusion>
+			<Position x="1" y="1"/>
+			<Position x="0" y="2"/>
+			<Position x="1" y="2"/>
+		</Exclusion>
+	</Tile>
+	<Tile identity="2" width="2" height="2" movementConstraint="none" image="2.png">
+		<Exclusion>
+			<Position x="0" y="0"/>
+		</Exclusion>
+	</Tile>
+	<Tile identity="3" width="2" height="2" movementConstraint="none" image="3.png">
+		<Exclusion>
+			<Position x="1" y="0"/>
+		</Exclusion>
+	</Tile>
+	<Tile identity="4" width="2" height="3" movementConstraint="none" image="4.png">
+		<Exclusion>
+			<Position x="1" y="0"/>
+			<Position x="0" y="2"/>
+		</Exclusion>
+	</Tile>
+	<Tile identity="5" width="2" height="1" movementConstraint="none" image="5.png">
+	</Tile>
+	<GameInstance name="2 piece">
+		<TileTemplate identity="1" x="1" y="1"/>
+		<TileTemplate identity="2" x="1" y="2"/>
+		<Completion>
+			<TileTemplate identity="1" x="2" y="2"/>
+		</Completion>
+	</GameInstance>
+	<GameInstance name="3 piece">
+		<TileTemplate identity="3" x="1" y="2"/>
+		<TileTemplate identity="4" x="3" y="2"/>
+		<TileTemplate identity="5" x="2" y="4"/>
+		<Completion>
+			<TileTemplate identity="3" x="3" y="3"/>
+		</Completion>
+	</GameInstance>
+</Game>

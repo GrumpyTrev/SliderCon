@@ -56,9 +56,7 @@
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ActivityBase.cs" />
-    <Compile Include="GameUpdater.cs">
-      <DependentUpon>GameInstance.cs</DependentUpon>
-    </Compile>
+    <Compile Include="GameUpdater.cs" />
     <Compile Include="History.cs" />
     <Compile Include="ApplicationData.cs" />
     <Compile Include="Game.cs" />
@@ -92,6 +90,7 @@
     <Folder Include="Assets\GameFiles\RushHour\" />
     <Folder Include="Resources\menu\" />
     <Folder Include="Assets\GameFiles\Egg Puzzle\" />
+    <Folder Include="Assets\GameFiles\Nick Bickford\" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\GameFiles\RushHour\RushHour.xml" />
@@ -133,5 +132,12 @@
     <AndroidAsset Include="Assets\GameFiles\RushHour\YellowCarLeft.png" />
     <AndroidAsset Include="Assets\GameFiles\RushHour\YellowCarUp.png" />
     <AndroidAsset Include="Assets\GameFiles\RushHour\YellowVanLeft.png" />
+    <AndroidAsset Include="Assets\GameFiles\Nick Bickford\Board.png" />
+    <AndroidAsset Include="Assets\GameFiles\Nick Bickford\Nick Bickford.xml" />
+    <AndroidAsset Include="Assets\GameFiles\Nick Bickford\1.png" />
+    <AndroidAsset Include="Assets\GameFiles\Nick Bickford\2.png" />
+    <AndroidAsset Include="Assets\GameFiles\Nick Bickford\3.png" />
+    <AndroidAsset Include="Assets\GameFiles\Nick Bickford\4.png" />
+    <AndroidAsset Include="Assets\GameFiles\Nick Bickford\5.png" />
   </ItemGroup>
 </Project>

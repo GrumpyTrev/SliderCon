@@ -66,21 +66,21 @@ namespace SliderCon
 			bool appliedOk = true;
 
 			// Apply the border first
-			if ( ( borderWidth > 0 ) && ( borderHeight > 0 ) )
+			if ( ( BorderWidthProperty > 0 ) && ( BorderHeightProperty > 0 ) )
 			{
 				// A border can only be applied if its dimensions are less than the application area
-				if ( ( ( borderWidth * 2 ) < applicationArea.GetLength( 0 ) ) &&	
-					( ( borderHeight * 2 ) < applicationArea.GetLength( 1 ) ) )
+				if ( ( ( BorderWidthProperty * 2 ) < applicationArea.GetLength( 0 ) ) &&	
+					( ( BorderHeightProperty * 2 ) < applicationArea.GetLength( 1 ) ) )
 				{
 					for ( int yIndex = 0; yIndex < applicationArea.GetLength( 1 ); ++yIndex )
 					{
 						for ( int xIndex = 0; xIndex < applicationArea.GetLength( 0 ); ++xIndex )
 						{
-							if ( ( yIndex < borderHeight ) || ( yIndex >= ( applicationArea.GetLength( 1 ) - borderHeight ) ) )
+							if ( ( yIndex < BorderHeightProperty ) || ( yIndex >= ( applicationArea.GetLength( 1 ) - BorderHeightProperty ) ) )
 							{
 								applicationArea[ xIndex, yIndex ] = valueToApply;
 							}
-							else if ( ( xIndex < borderWidth ) || ( xIndex >= ( applicationArea.GetLength( 0 ) - borderWidth ) ) )
+							else if ( ( xIndex < BorderWidthProperty ) || ( xIndex >= ( applicationArea.GetLength( 0 ) - BorderWidthProperty ) ) )
 							{
 								applicationArea[ xIndex, yIndex ] = valueToApply;
 							}
@@ -90,7 +90,7 @@ namespace SliderCon
 				else
 				{
 					Log.Debug( LogTag, string.Format( "Border width {0} or height {1} too big for playing area (2}, {3}",
-						borderWidth, borderHeight, applicationArea.GetLength( 0 ), applicationArea.GetLength( 1 ) ) );
+						BorderWidthProperty, BorderHeightProperty, applicationArea.GetLength( 0 ), applicationArea.GetLength( 1 ) ) );
 					appliedOk = false;
 				}
 			}
@@ -182,6 +182,14 @@ namespace SliderCon
 			return appliedOk;
 		}
 
+		/// <summary>
+		/// Check that all non-excluded parts of the tile can be placed at the specified position on the board
+		/// </summary>
+		/// <returns><c>true</c>, if application was checked, <c>false</c> otherwise.</returns>
+		/// <param name="applicationArea">Application area.</param>
+		/// <param name="valueToCheck">Value to check.</param>
+		/// <param name="xOffset">X offset.</param>
+		/// <param name="yOffset">Y offset.</param>
 		public bool CheckApplication( int [ , ] applicationArea, int valueToCheck, int xOffset, int yOffset )
 		{
 			bool checkOk = false;
@@ -224,15 +232,8 @@ namespace SliderCon
 		/// <value>The name property.</value>
 		public int BorderWidthProperty
 		{
-			get
-			{
-				return borderWidth;
-			}
-
-			set
-			{
-				borderWidth = value;
-			}
+			get;
+			set;
 		}
 
 		[XmlAttribute( "height" ) ]
@@ -242,15 +243,8 @@ namespace SliderCon
 		/// <value>The type property.</value>
 		public int BorderHeightProperty
 		{
-			get
-			{
-				return borderHeight;
-			}
-
-			set
-			{
-				borderHeight = value;
-			}
+			get;
+			set;
 		}
 
 		[XmlElement( "Position" ) ]
@@ -259,10 +253,6 @@ namespace SliderCon
 			get;
 			set;
 		}
-
-		private int borderWidth = 0;
-
-		private int borderHeight = 0;
 
 		/// <summary>
 		/// An integer array holding a tile's excluded area (marked as -1)

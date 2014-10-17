@@ -80,6 +80,11 @@ namespace SliderCon
 			}
 		}
 
+		/// <summary>
+		/// Gets the move count for a specified instance.
+		/// </summary>
+		/// <returns>The move count for instance.</returns>
+		/// <param name="instanceName">Instance name.</param>
 		public int GetMoveCountForInstance( string instanceName )
 		{
 			int moveCount = 0;

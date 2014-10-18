@@ -11,59 +11,24 @@
         android:paddingTop="1dp"
         android:background="#ffbbbbbb">
         <TextView
-            android:text="Move "
+            android:text="Step "
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/movesLabel"
             android:singleLine="true"
-            android:layout_gravity="center"
             android:layout_centerVertical="true"
             android:paddingLeft="1dp"
-            android:textColor="#ff000000" />
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/movesCountLayout"
-            android:background="@drawable/customborder"
-            android:layout_gravity="center_vertical"
-            android:splitMotionEvents="false"
-            android:paddingTop="1dp"
-            android:paddingBottom="1dp"
-            android:layout_toRightOf="@id/movesLabel"
-            android:layout_centerVertical="true">
-            <TextView
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/movesCount"
-                android:text="8888"
-                android:singleLine="true"
-                android:layout_width="45dp"
-                android:layout_height="wrap_content"
-                android:background="#ffbbbbbb"
-                android:paddingTop="1dp"
-                android:paddingRight="1dp"
-                android:paddingBottom="1dp"
-                android:paddingLeft="1dp"
-                android:textColor="#ff000000" />
-        </LinearLayout>
-        <TextView
-            android:text="   Min:"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/movesCountLayout"
-            android:layout_centerVertical="true"
-            android:id="@+id/minCountLabel"
             android:textColor="#ff000000" />
         <TextView
             android:text="8888"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/minCountLabel"
+            android:layout_toRightOf="@id/movesLabel"
+            android:id="@+id/movesCount"
+            android:singleLine="true"
             android:layout_centerVertical="true"
-            android:id="@+id/minCount"
             android:textColor="#ff000000" />
         <Button
             android:text="Reset"
@@ -86,6 +51,25 @@
             android:enabled="true"
             android:visibility="visible"
             android:clickable="true" />
+        <TextView
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/backButton"
+            android:layout_centerVertical="true"
+            android:id="@+id/minCount"
+            android:textColor="#ff000000"
+            android:minWidth="20dp" />
+        <TextView
+            android:text="Best "
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/minCount"
+            android:layout_centerVertical="true"
+            android:id="@+id/minCountLabel"
+            android:paddingLeft="1dp"
+            android:textColor="#ff000000" />
     </RelativeLayout>
     <SliderCon.BoardView
         android:id="@+id/gameboard"
@@ -94,9 +78,14 @@
         android:layout_weight="1" />
     <TextView
         android:text="No game loaded"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="match_parent"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/gameName"
-        android:layout_height="60dp"
-        android:inputType="none" />
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:layout_width="wrap_content"
+        android:scrollHorizontally="true" />
 </LinearLayout>

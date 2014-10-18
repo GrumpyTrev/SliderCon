@@ -120,8 +120,6 @@ namespace SliderCon
 					ApplicationData.InstanceProperty.SelectedGameProperty.GetGameInstance( ApplicationData.InstanceProperty.InstanceFullNameProperty ) );
 				FinishedInitialising();
 			};
-
-			activityInstance = this;
 		}
 
 		/// <summary>

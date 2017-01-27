@@ -54,6 +54,10 @@ namespace SliderCon
 	/// </summary>
 	public class BoardView : RelativeLayout, View.IOnTouchListener
 	{
+		//
+		// Public methods
+		//
+
 		/// <summary>
 		/// Public constructor
 		/// </summary>
@@ -120,6 +124,53 @@ namespace SliderCon
 			}
 		}
 
+		/// <summary>
+		/// Called in response to touch events
+		/// </summary>
+		/// <param name="touchedView">Touched view.</param>
+		/// <param name="viewEvent">View event.</param>
+		public bool OnTouch( View touchedView, MotionEvent viewEvent )
+		{
+			bool touched = true;
+
+			if ( viewEvent.Action == MotionEventActions.Down )
+			{
+				ProcessDownEvent( touchedView, viewEvent );
+			}
+			else if ( viewEvent.Action == MotionEventActions.Up )
+			{
+				ProcessUpEvent();
+			}
+			else if ( viewEvent.Action == MotionEventActions.Move )
+			{
+				ProcessMoveEvent( viewEvent.RawX, viewEvent.RawY );
+			}
+
+			return touched;
+		}
+
+		//
+		// Protected methods
+		//
+
+		/// <summary>
+		/// This is called during layout when the size of this view has changed.
+		/// </summary>
+		/// <param name="width">Width.</param>
+		/// <param name="height">Height.</param>
+		/// <param name="oldWidth">Old width.</param>
+		/// <param name="oldHeight">Old height.</param>
+		protected override void OnSizeChanged( int width, int height, int oldWidth, int oldHeight )
+		{
+			base.OnSizeChanged( width, height, oldWidth, oldHeight );
+
+			// This can be called before the view has been sized or the application initialised so check first
+			if ( ( Width > 0 ) && ( Height > 0 ) && ( movementChecker != null )  )
+			{	
+				InitialiseBoardBackground();
+				LoadTiles();
+			}
+		}
 
 		//
 		// Private methods
@@ -187,120 +238,159 @@ namespace SliderCon
 		}
 
 		/// <summary>
-		/// Called in response to touch events
+		/// Processes the move event.
 		/// </summary>
-		/// <param name="touchedView">Touched view.</param>
-		/// <param name="viewEvent">View event.</param>
-		public bool OnTouch( View touchedView, MotionEvent viewEvent )
+		/// <param name="newX">The new X coordinate</param>
+		/// <param name="newY">The new Y coordinate</param>
+		private void ProcessMoveEvent( float newX, float newY )
 		{
-			bool touched = true;
-
-			if ( viewEvent.Action == MotionEventActions.Down )
+			// Check that a tile is being moved
+			if ( movedTile != null )
 			{
-				ProcessDownEvent( touchedView, viewEvent );
-			}
-			else if ( viewEvent.Action == MotionEventActions.Up )
-			{
-				ProcessUpEvent();
-			}
-			else if ( viewEvent.Action == MotionEventActions.Move )
-			{
-				// Check that a tile is being moved, and that the movement still refers to this tile
-				if ( movedTile != null )
+				// Are the movement coordinates still contained by this tile
+				Rect tileBounds = new Rect();
+				movedTile.GetGlobalVisibleRect( tileBounds );
+				if ( tileBounds.Contains( ( int )newX, ( int )newY ) == true )
 				{
-					Rect tileBounds = new Rect();
-					movedTile.GetGlobalVisibleRect( tileBounds );
-					if ( tileBounds.Contains( ( int )viewEvent.RawX, ( int )viewEvent.RawY ) == true )
+					// Determine how far has been moved since last time. 
+					float dxEvent = newX - lastDraggedPosition.X;
+					float dyEvent = newY - lastDraggedPosition.Y;
+
+					Log.Debug( LogTag, string.Format( "Event from {0}, {1} by {2}, {3} to {4}, {5}", lastDraggedPosition.X, lastDraggedPosition.Y,
+						dxEvent, dyEvent, newX, newY ) );
+
+					// Apply any movement constraint
+					if ( movedTile.TileProperty.MovementConstraintProperty == Tile.MovementConstraintType.Horizontal )
 					{
-						// Determine how far has been moved since last time. 
-						float dxEvent = viewEvent.RawX - lastDraggedPosition.X;
-						float dyEvent = viewEvent.RawY - lastDraggedPosition.Y;
+						dyEvent = 0;
+					}
+					else if ( movedTile.TileProperty.MovementConstraintProperty == Tile.MovementConstraintType.Vertical )
+					{
+						dxEvent = 0;
+					}
 
-						Log.Debug( LogTag, string.Format( "Event from {0}, {1} by {2}, {3} to {4}, {5}", lastDraggedPosition.X, lastDraggedPosition.Y,
-							dxEvent, dyEvent, viewEvent.RawX, viewEvent.RawY ) );
+					// Determine the new pixel position of the tile being moved
+					float dxTile = movedTile.GetX() + dxEvent;
+					float dyTile = movedTile.GetY() + dyEvent;
 
-						// Apply any movement constraint
-						if ( movedTile.TileProperty.MovementConstraintProperty == Tile.MovementConstraintType.Horizontal )
+					Log.Debug( LogTag, string.Format( "Tile from {0}, {1} to {2}, {3}", movedTile.GetX(), movedTile.GetY(), dxTile, dyTile ) );
+
+					// In working out the new grid positions to test the direction of movement has to be taken into account
+					int xNewGrid = 0;
+					if ( dxEvent >= 0 )
+					{
+						// Round up
+						xNewGrid = GridXFromView( dxTile );
+					}
+					else
+					{
+						// Round down
+						xNewGrid = ( int )( dxTile - xOffset ) / pixelsPerGridPosition;
+					}
+
+					int yNewGrid = 0;
+					if ( dyEvent >= 0 )
+					{
+						// Round up
+						yNewGrid = GridYFromView( dyTile);
+					}
+					else
+					{
+						// Round down
+						yNewGrid = ( int )( dyTile - yOffset ) / pixelsPerGridPosition;
+					}
+
+					// Check if the new grid position is included in the list of occcupied positions associated with the moved tile.
+					bool validMove = false;
+
+					foreach ( Point checkPoint in currentGridPositions )
+					{
+						if ( ( xNewGrid == checkPoint.X ) && ( yNewGrid == checkPoint.Y ) )
 						{
-							dyEvent = 0;
+							validMove = true;
 						}
-						else if ( movedTile.TileProperty.MovementConstraintProperty == Tile.MovementConstraintType.Vertical )
-						{
-							dxEvent = 0;
-						}
+					}
 
-						// Determine the new pixel position of the tile being moved
-						float dxTile = movedTile.GetX() + dxEvent;
-						float dyTile = movedTile.GetY() + dyEvent;
-
-						Log.Debug( LogTag, string.Format( "Tile from {0}, {1} to {2}, {3}", movedTile.GetX(), movedTile.GetY(), dxTile, dyTile ) );
-
-						// In working out the new grid positions to test the direction of movement has to be taken into account
-						int xNewGrid = 0;
-						if ( dxEvent >= 0 )
-						{
-							// Round up
-							xNewGrid = GridXFromView( dxTile );
-						}
-						else
-						{
-							// Round down
-							xNewGrid = ( int )( dxTile - xOffset ) / pixelsPerGridPosition;
-						}
-
-						int yNewGrid = 0;
-						if ( dyEvent >= 0 )
-						{
-							// Round up
-							yNewGrid = GridYFromView( dyTile);
-						}
-						else
-						{
-							// Round down
-							yNewGrid = ( int )( dyTile - yOffset ) / pixelsPerGridPosition;
-						}
-
-						Log.Debug( LogTag, string.Format( "Last checked grid {0}, {1} new grid {2}, {3} original grid {4}, {5}", movementChecker.LastCheckedXProperty,
-							movementChecker.LastCheckedYProperty, xNewGrid, yNewGrid, movedTile.TileProperty.GridXProperty, movedTile.TileProperty.GridYProperty ) );
+					if ( validMove == false )
+					{
+						Log.Debug( LogTag, string.Format( "New grid {0}, {1} original grid {2}, {3}", xNewGrid, yNewGrid, movedTile.TileProperty.GridXProperty, 
+							movedTile.TileProperty.GridYProperty ) );
 
 						// Validate the move
 						bool xInvalid = false;
 						bool yInvalid = false;
-						bool validMove = movementChecker.CheckTileMovement( xNewGrid, yNewGrid, Math.Abs( dxEvent ) > Math.Abs( dyEvent ), ref xInvalid, ref yInvalid );
+						validMove = movementChecker.CheckTileMovement( currentGridPositions, xNewGrid, yNewGrid, Math.Abs( dxEvent ) > Math.Abs( dyEvent ), ref xInvalid, 
+							ref yInvalid );
 
 						// If the move was not valid then adjust the delta for any failed direction.
 						if ( xInvalid == true )
 						{
-							dxTile = ViewXFromGrid( movementChecker.LastCheckedXProperty );
-							Log.Debug( LogTag, string.Format( "New X {0} is not last checked {1} setting X to {2}", xNewGrid, movementChecker.LastCheckedXProperty, dxTile ) );
+							int currentXGrid = movedTile.TileProperty.GridXProperty;
+
+							// Need to work out which grid position has been straddled and set the x coordinate to it
+							if ( ( ( movedTile.GetX() - xOffset ) % pixelsPerGridPosition ) == 0 )
+							{
+								dxTile = ViewXFromGrid( currentXGrid );
+							}
+							else
+							{
+								if ( dxEvent >= 0 )
+								{
+									dxTile = ViewXFromGrid( currentXGrid + 1 );
+								}
+								else
+								{
+									dxTile = ViewXFromGrid( currentXGrid );
+								}
+							}
+							Log.Debug( LogTag, string.Format( "New X {0} is not valid setting X to {1}", xNewGrid, dxTile ) );
 						}
 
 						if ( yInvalid == true )
 						{
-							dyTile = ViewYFromGrid( movementChecker.LastCheckedYProperty );
-							Log.Debug( LogTag, string.Format( "New Y {0} is not last checked {1} setting Y to {2}", yNewGrid, movementChecker.LastCheckedYProperty, dyTile ) );
-						}
+							int currentYGrid = movedTile.TileProperty.GridYProperty;
 
-						// If either of the new grid positions are valid then move the tile
-						if ( validMove == true )
-						{
-							Log.Debug( LogTag, string.Format( "Valid move - tile now at {0}, {1} new grid {2}, {3}", dxTile, dyTile, GridXFromView( dxTile ), GridYFromView( dyTile ) ) );
+							// Need to work out which grid position has been straddled and set the y coordinate to it
+							if ( ( ( movedTile.GetY() - yOffset ) % pixelsPerGridPosition ) == 0 )
+							{
+								dyTile = ViewYFromGrid( currentYGrid );
+							}
+							else
+							{
+								if ( dyEvent >= 0 )
+								{
+									dyTile = ViewYFromGrid( currentYGrid + 1 );
+								}
+								else
+								{
+									dyTile = ViewYFromGrid( currentYGrid );
+								}
+							}
 
-							movedTile.SetX( dxTile );
-							movedTile.SetY( dyTile );
-
-							lastDraggedPosition = new PointF( viewEvent.RawX, viewEvent.RawY );
+							Log.Debug( LogTag, string.Format( "New Y {0} is not valid setting Y to {1}", yNewGrid, dyTile ) );
 						}
 					}
-					else
+
+					// If either of the new grid positions are valid then move the tile
+					if ( validMove == true )
 					{
-						// No longer over this tile - treat as an Up event
-						ProcessUpEvent();
+						Log.Debug( LogTag, string.Format( "Valid move - tile now at {0}, {1} new grid {2}, {3}", dxTile, dyTile, GridXFromView( dxTile ), GridYFromView( dyTile ) ) );
+
+						movedTile.SetX( dxTile );
+						movedTile.SetY( dyTile );
+
+						// Refresh the record of grid positions occupied by the tile
+						currentGridPositions = DetermineCurrentGridPositions( (int)movedTile.GetX(), (int)movedTile.GetY() );
+
+						lastDraggedPosition = new PointF( newX, newY );
 					}
 				}
+				else
+				{
+					// No longer over this tile - treat as an Up event
+					ProcessUpEvent();
+				}
 			}
-
-			return touched;
 		}
 
 		/// <summary>
@@ -360,6 +450,10 @@ namespace SliderCon
 				movedTile = touchedTile;
 				lastDraggedPosition = new PointF( viewEvent.RawX, viewEvent.RawY );
 
+				// Determine the grid positions occupied by this tile (it may span over multiple grid positions)
+				// is included in this list.
+				currentGridPositions = DetermineCurrentGridPositions( (int)movedTile.GetX(), (int)movedTile.GetY() );
+
 				// Notify the movement checker of the tile being moved
 				movementChecker.TileSelected( movedTile.TileProperty );
 
@@ -369,22 +463,58 @@ namespace SliderCon
 		}
 
 		/// <summary>
-		/// This is called during layout when the size of this view has changed.
+		/// Determines the current grid positions occupied by the tile being moved.
 		/// </summary>
-		/// <param name="width">Width.</param>
-		/// <param name="height">Height.</param>
-		/// <param name="oldWidth">Old width.</param>
-		/// <param name="oldHeight">Old height.</param>
-		protected override void OnSizeChanged( int width, int height, int oldWidth, int oldHeight )
+		/// <returns>The current grid positions.</returns>
+		/// <param name="currentXCoordinate">Current X coordinate.</param>
+		/// <param name="currentYCoordinate">Current Y coordinate.</param>
+		private List< Point > DetermineCurrentGridPositions( int currentXCoordinate, int currentYCoordinate )
 		{
-			base.OnSizeChanged( width, height, oldWidth, oldHeight );
+			// Determine the grid positions occupied by this tile (it may span over multiple grid positions) and check if the new grid position
+			// is included in this list.
+			List< Point > gridPositions = new List<Point>();
 
-			// This can be called before the view has been sized or the application initialised so check first
-			if ( ( Width > 0 ) && ( Height > 0 ) && ( movementChecker != null )  )
-			{	
-				InitialiseBoardBackground();
-				LoadTiles();
+			// List always includes the current grid position of the top-left of the tile
+			int currentGridX = ( currentXCoordinate - xOffset ) / pixelsPerGridPosition;
+			int currentGridY = ( currentYCoordinate - yOffset ) / pixelsPerGridPosition;
+
+			gridPositions.Add( new Point( currentGridX, currentGridY ) );
+
+			Log.Debug( LogTag, string.Format( "Adding {0}, {1} to grid positions list", currentGridX, currentGridY ) );
+
+			// Is current X coordinate aligned with the grid
+			if ( ( ( currentXCoordinate - xOffset ) % pixelsPerGridPosition ) == 0 )
+			{
+				// X is aligned - how about Y
+				if ( ( ( currentYCoordinate - yOffset ) % pixelsPerGridPosition ) != 0 )
+				{
+					// Not aligned - add a position for Y + 1
+					gridPositions.Add( new Point( currentGridX, currentGridY + 1 ) );
+					Log.Debug( LogTag, string.Format( "Adding {0}, {1} to grid positions list", currentGridX, currentGridY + 1 ) );
+				}
+				else
+				{
+					// X and Y aligned so no more positions to add
+				}
 			}
+			else
+			{
+				// X is not aligned so add a position for X + 1
+				gridPositions.Add( new Point( currentGridX + 1, currentGridY ) );
+				Log.Debug( LogTag, string.Format( "Adding {0}, {1} to grid positions list", currentGridX + 1, currentGridY ) );
+
+				// Is Y aligned
+				if ( ( ( currentYCoordinate - yOffset ) % pixelsPerGridPosition ) != 0 )
+				{
+					// Not aligned = add a posiiton for Y + 1, and for X + 1 and Y + 1
+					gridPositions.Add( new Point( currentGridX, currentGridY + 1 ) );
+					Log.Debug( LogTag, string.Format( "Adding {0}, {1} to grid positions list", currentGridX, currentGridY + 1 ) );
+					gridPositions.Add( new Point( currentGridX + 1, currentGridY + 1 ) );
+					Log.Debug( LogTag, string.Format( "Adding {0}, {1} to grid positions list", currentGridX + 1, currentGridY + 1 ) );
+				}
+			}
+
+			return gridPositions;
 		}
 
 		/// <summary>
@@ -447,6 +577,11 @@ namespace SliderCon
 		/// The tile being moved.
 		/// </summary>
 		private TileView movedTile = null;
+
+		/// <summary>
+		/// The current grid positions occupied by the selected tile.
+		/// </summary>
+		private List< Point > currentGridPositions = null;
 
 		/// <summary>
 		/// The last dragged position.

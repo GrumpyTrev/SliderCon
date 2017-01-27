@@ -41,6 +41,7 @@ using System.Collections.Generic;
 
 using Android.Util;
 using Android.Widget;
+using Android.Graphics;
 
 namespace SliderCon
 {
@@ -88,12 +89,36 @@ namespace SliderCon
 		/// <param name="theSelectedTile">The selected tile.</param>
 		public void TileSelected( Tile theSelectedTile )
 		{
-			// Save the current grid position as the last checked
-			lastCheckedX = theSelectedTile.GridXProperty;
-			lastCheckedY = theSelectedTile.GridYProperty;
-
 			// Save the selected tile
 			selectedTile = theSelectedTile;
+		}
+
+		/// <summary>
+		/// Checks the tile movement.
+		/// Check all the positions from the last checked to the new position, until either an invalid move is detected or all such positions have been checked 
+		/// </summary>
+		/// <returns><c>true</c>, if tile movement was checked, <c>false</c> otherwise.</returns>
+		/// <param name="currentGridPositions">List of grid positions to use as the starting point of a number of checks</param>
+		/// <param name="xNewGrid">X new grid.</param>
+		/// <param name="yNewGrid">Y new grid.</param>
+		/// <param name="xBias">If set to true if on a diagonal move the X should be tried before the Y x bias.</param>
+		/// <param name="xInvalid">Returns true if the reason for a failed move is an invalid X position.</param>
+		/// <param name="yInvalid">Returns true if the reason for a failed move is an invalid Y position.</param>
+		public bool CheckTileMovement( List< Point > currentGridPositions, int xNewGrid, int yNewGrid, bool xBias, ref bool xInvalid, ref bool yInvalid )
+		{
+			// Assume its a valid move
+			bool validMove = true;
+
+			int xMove = xNewGrid - currentGridPositions[ 0 ].X;
+			int yMove = yNewGrid - currentGridPositions[ 0 ].Y;
+			List< Point >.Enumerator enumerator = currentGridPositions.GetEnumerator();
+			while ( ( validMove == true )  &&  ( enumerator.MoveNext() == true ) )
+			{
+				Point checkPosition = enumerator.Current;
+				validMove = CheckTileMovement( checkPosition, xMove + checkPosition.X, yMove + checkPosition.Y, xBias, ref xInvalid, ref yInvalid );
+			}
+
+			return validMove;
 		}
 
 		/// <summary>
@@ -106,140 +131,142 @@ namespace SliderCon
 		/// <param name="xBias">If set to true if on a diagonal move the X should be tried before the Y x bias.</param>
 		/// <param name="xInvalid">Returns true if the reason for a failed move is an invalid X position.</param>
 		/// <param name="yInvalid">Returns true if the reason for a failed move is an invalid Y position.</param>
-		public bool CheckTileMovement( int xNewGrid, int yNewGrid, bool xBias, ref bool xInvalid, ref bool yInvalid )
+		public bool CheckTileMovement( Point currentGridPosition, int xNewGrid, int yNewGrid, bool xBias, ref bool xInvalid, ref bool yInvalid )
 		{
 			// Assume its a valid move
 			bool validMove = true;
 			xInvalid = false;
 			yInvalid = false;
 
-			// Only validate the move if not previously checked
-			if ( ( yNewGrid != lastCheckedY ) || ( xNewGrid != lastCheckedX ) )
+			// Keep local track of which movement is valid
+			bool xValid = false;
+			bool yValid = false;
+
+				// Use the current grid position as the starting point
+			int checkX = currentGridPosition.X;
+			int checkY = currentGridPosition.Y;
+
+			// Test is complete only when all positions have been tested
+			bool testComplete = false;
+
+			// Start checking all positions from the last checked to the new grid position
+			while ( ( testComplete == false ) && ( validMove == true ) )
 			{
-				// Keep local track of which movement is valid
-				bool xValid = false;
-				bool yValid = false;
+				// Determine how far the test position is from the new grid position
+				int dX = xNewGrid - checkX;
+				int dY = yNewGrid - checkY;
 
-				// Test is complete only when all positions have been tested
-				bool testComplete = false;
-
-				// Start checking all positions from the last checked to the new grid position
-				while ( ( testComplete == false ) && ( validMove == true ) )
+				// If the new grid position has been reached then get out of this loop
+				if ( ( dX == 0 ) && ( dY == 0 ) )
 				{
-					// Determine how far the test position is from the new grid position
-					int dX = xNewGrid - lastCheckedX;
-					int dY = yNewGrid - lastCheckedY;
+					testComplete = true;
+				}
+				else
+				{
+					// Test the X and Y directions as required
+					xValid = false;
+					yValid = false;
 
-					// If the new grid position has been reached then get out of this loop
-					if ( ( dX == 0 ) && ( dY == 0 ) )
+					// If further away in the X direction then test that direction first
+					if ( Math.Abs( dX ) > Math.Abs( dY ) )
 					{
-						testComplete = true;
+						xValid = grid.CheckMove( selectedTile, checkX + Math.Sign( dX ), checkY );
+						if ( xValid == true )
+						{
+							checkX += Math.Sign( dX );
+						}
+						else
+						{
+							// Move is not valid - stop testing at this point
+							validMove = false;
+						}
 					}
-					else
+					// If further away in the Y direction then test that direction first
+					else if ( Math.Abs( dY ) > Math.Abs( dX ) )
 					{
-						// Test the X and Y directions as required
-						xValid = false;
-						yValid = false;
-
-						// If further away in the X direction then test that direction first
-						if ( Math.Abs( dX ) > Math.Abs( dY ) )
+						yValid = grid.CheckMove( selectedTile, checkX, checkY + Math.Sign( dY ) );
+						if ( yValid == true )
 						{
-							xValid = grid.CheckMove( selectedTile, lastCheckedX + Math.Sign( dX ), lastCheckedY );
-							if ( xValid == true )
-							{
-								lastCheckedX += Math.Sign( dX );
-							}
-							else
-							{
-								// Move is not valid - stop testing at this point
-								validMove = false;
-							}
+							checkY += Math.Sign( dY );
 						}
-						// If further away in the Y direction then test that direction first
-						else if ( Math.Abs( dY ) > Math.Abs( dX ) )
+						else
 						{
-							yValid = grid.CheckMove( selectedTile, lastCheckedX, lastCheckedY + Math.Sign( dY ) );
-							if ( yValid == true )
-							{
-								lastCheckedY += Math.Sign( dY );
-							}
-							else
-							{
-								// Move is not valid - stop testing at this point
-								validMove = false;
-							}
+							// Move is not valid - stop testing at this point
+							validMove = false;
 						}
-						// If equally far away in X and Y then attempt to test both.
-						else if ( Math.Abs( dX ) == Math.Abs( dY ) )
-						{
-							// First test the individual X and Y moves
-							xValid = grid.CheckMove( selectedTile, lastCheckedX + Math.Sign( dX ), lastCheckedY );
-							yValid = grid.CheckMove( selectedTile, lastCheckedX, lastCheckedY + Math.Sign( dY ) );
+					}
+					// If equally far away in X and Y then attempt to test both.
+					else if ( Math.Abs( dX ) == Math.Abs( dY ) )
+					{
+						// First test the individual X and Y moves
+						xValid = grid.CheckMove( selectedTile, checkX + Math.Sign( dX ), checkY );
+						yValid = grid.CheckMove( selectedTile, checkX, checkY + Math.Sign( dY ) );
 
-							// If both individual moves are OK then try together
-							if ( ( xValid == true ) && ( yValid == true ) )
+						// If both individual moves are OK then try together
+						if ( ( xValid == true ) && ( yValid == true ) )
+						{
+							if ( grid.CheckMove( selectedTile, checkX + Math.Sign( dX ), checkY + Math.Sign( dY ) ) == false )
 							{
-								if ( grid.CheckMove( selectedTile, lastCheckedX + Math.Sign( dX ), lastCheckedY + Math.Sign( dY ) ) == false )
+								// Both individual moves are OK but the diagonal move is not.
+								// Choose one of the individual moves to keep based on the overall event movement
+								if ( xBias == true )
 								{
-									// Both individual moves are OK but the diagonal move is not.
-									// Choose one of the individual moves to keep based on the overall event movement
-									if ( xBias == true )
-									{
-										// Just keep the X
-										lastCheckedX += Math.Sign( dX );
-									}
-									else
-									{
-										// Just keep the Y
-										lastCheckedY += Math.Sign( dY );
-									}
-
-									// Stop at this point
-									validMove = false;
+									// Just keep the X
+									checkX += Math.Sign( dX );
+									yValid = false;
 								}
 								else
 								{
-									// Diagonal move is valid - keep it
-									lastCheckedX += Math.Sign( dX );
-									lastCheckedY += Math.Sign( dY );
-								}
-							}
-							else
-							{
-								// Use whichever (if any) of the individual moves
-								if ( xValid == true )
-								{
-									lastCheckedX += Math.Sign( dX );
-								}
-
-								if ( yValid == true )
-								{
-									lastCheckedY += Math.Sign( dY );
+									// Just keep the Y
+									checkY += Math.Sign( dY );
+									xValid = false;
 								}
 
 								// Stop at this point
 								validMove = false;
 							}
+							else
+							{
+								// Diagonal move is valid - keep it
+								checkX += Math.Sign( dX );
+								checkY += Math.Sign( dY );
+							}
+						}
+						else
+						{
+							// Use whichever (if any) of the individual moves
+							if ( xValid == true )
+							{
+								checkX += Math.Sign( dX );
+							}
+
+							if ( yValid == true )
+							{
+								checkY += Math.Sign( dY );
+							}
+
+							// Stop at this point
+							validMove = false;
 						}
 					}
 				}
-
-				// If the move is not valid then tell the view which direction caused the problem
-				if ( ( lastCheckedX != xNewGrid ) && ( xValid == false ) )
-				{
-					xInvalid = true;
-				}
-
-				if ( ( lastCheckedY != yNewGrid ) && ( yValid == false ) )
-				{
-					yInvalid = true;
-				}
-
-				// The move is assumed to be valid if at least one or the directions was valid
-				validMove = ( ( lastCheckedX == xNewGrid ) || ( lastCheckedY == yNewGrid ) );
-
-				Log.Debug( LogTag, string.Format( "Last valid check {0}, {1}", lastCheckedX, lastCheckedY ) );
 			}
+
+			// If the move is not valid then tell the view which direction caused the problem
+			if ( ( checkX != xNewGrid ) && ( xValid == false ) )
+			{
+				xInvalid = true;
+			}
+
+			if ( ( checkY != yNewGrid ) && ( yValid == false ) )
+			{
+				yInvalid = true;
+			}
+
+			// The move is assumed to be valid if at least one or the directions was valid
+			validMove = ( ( checkX == xNewGrid ) || ( checkY == yNewGrid ) );
+
+			Log.Debug( LogTag, string.Format( "Last valid check {0}, {1}", checkX, checkY ) );
 
 			return validMove;
 		}
@@ -278,30 +305,6 @@ namespace SliderCon
 				{
 					completionDelegate();
 				}
-			}
-		}
-
-		/// <summary>
-		/// Gets the last checked X property.
-		/// </summary>
-		/// <value>The last checked X property.</value>
-		public int LastCheckedXProperty
-		{
-			get
-			{
-				return lastCheckedX;
-			}
-		}
-
-		/// <summary>
-		/// Gets the last checked Y property.
-		/// </summary>
-		/// <value>The last checked Y property.</value>
-		public int LastCheckedYProperty
-		{
-			get
-			{
-				return lastCheckedY;
 			}
 		}
 
@@ -403,12 +406,6 @@ namespace SliderCon
 		//
 		// Private data
 		//
-
-		/// <summary>
-		/// The last checked x and y grid coordinates of the selected tile
-		/// </summary>
-		private int lastCheckedX = -1;
-		private int lastCheckedY = -1;
 
 		/// <summary>
 		/// The selected tile.

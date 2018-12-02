@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -84,14 +84,7 @@
     <AndroidResource Include="Resources\drawable\ic_action_overflow.png" />
     <AndroidResource Include="Resources\drawable\customborder.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Assets\" />
-    <Folder Include="Assets\GameFiles\" />
-    <Folder Include="Assets\GameFiles\RushHour\" />
-    <Folder Include="Resources\menu\" />
-    <Folder Include="Assets\GameFiles\Egg Puzzle\" />
-    <Folder Include="Assets\GameFiles\Nick Bickford\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <AndroidAsset Include="Assets\GameFiles\RushHour\RushHour.xml" />
     <AndroidAsset Include="Assets\GameFiles\Egg Puzzle\Board.png" />
